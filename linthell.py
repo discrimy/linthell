@@ -29,6 +29,10 @@ def get_id_lines(lint_output: str, regex: str) -> List[str]:
     ]
 
 
+def id_line_to_digest(id_line: str) -> str:
+    return hashlib.md5(id_line.encode('utf-8')).hexdigest()
+
+
 @click.group()
 def cli() -> None:
     pass
@@ -48,12 +52,14 @@ def baseline(baseline_file: str, lint_format: str) -> None:
 def lint(baseline_file: str, lint_format: str) -> None:
     has_errors = False
     id_lines = Path(baseline_file).read_text().splitlines()
-    digests = {hashlib.md5(id_line.encode('utf-8')).hexdigest() for id_line in id_lines}
-    for path, line, message in re.findall(lint_format, sys.stdin.read()):
+    digests = {id_line_to_digest(id_line) for id_line in id_lines}
+    for match in re.finditer(lint_format, sys.stdin.read()):
+        path, line, message = match.groups()
+        lint_message = match.group(0)
         id_line = get_id_line(path, line, message)
-        digest = hashlib.md5(id_line.encode('utf-8')).hexdigest()
+        digest = id_line_to_digest(id_line)
         if digest not in digests:
-            print(id_line)
+            print(lint_message)
             has_errors = True
     if has_errors:
         sys.exit(1)
