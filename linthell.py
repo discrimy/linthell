@@ -2,7 +2,6 @@ import re
 import hashlib
 import sys
 from pathlib import Path
-from typing import List
 
 import click
 
@@ -21,7 +20,7 @@ def get_id_line(path: str, line: str, message: str) -> str:
     return f'{normalized_path}:{code}:{message}'
 
 
-def get_id_lines(lint_output: str, regex: str) -> List[str]:
+def get_id_lines(lint_output: str, regex: str) -> list[str]:
     return [
         get_id_line(path, line, message)
         for path, line, message
