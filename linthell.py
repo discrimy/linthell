@@ -5,9 +5,9 @@ from pathlib import Path
 
 import click
 
-FLAKE8_REGEX = r'([a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(\d+):\d+: ([^\n]+)'
-PYDOCSTYLE_REGEX = r'([a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(\d+).+\n\s+([^\n]+)'
-PYLINT_REGEX = r'([a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(\d+):\d+: ([^\n]+)'
+FLAKE8_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+):\d+: (?P<message>[^\n]+)'
+PYDOCSTYLE_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+).+\n\s+(?P<message>[^\n]+)'
+PYLINT_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+):\d+: (?P<message>[^\n]+)'
 
 
 def get_id_line(path: str, line: str, message: str) -> str:
@@ -22,9 +22,13 @@ def get_id_line(path: str, line: str, message: str) -> str:
 
 def get_id_lines(lint_output: str, regex: str) -> list[str]:
     return [
-        get_id_line(path, line, message)
-        for path, line, message
-        in re.findall(regex, lint_output)
+        get_id_line(
+            match.groupdict()['path'],
+            match.groupdict()['line'],
+            match.groupdict()['message'],
+        )
+        for match
+        in re.finditer(regex, lint_output)
     ]
 
 
@@ -53,7 +57,9 @@ def lint(baseline_file: str, lint_format: str) -> None:
     id_lines = Path(baseline_file).read_text().splitlines()
     digests = {id_line_to_digest(id_line) for id_line in id_lines}
     for match in re.finditer(lint_format, sys.stdin.read()):
-        path, line, message = match.groups()
+        path = match.groupdict()['path']
+        line = match.groupdict()['line']
+        message = match.groupdict()['message']
         lint_message = match.group(0)
         id_line = get_id_line(path, line, message)
         digest = id_line_to_digest(id_line)
