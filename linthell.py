@@ -6,9 +6,9 @@ from typing import List
 
 import click
 
-FLAKE8_REGEX = r'(.+\/[^\/]+):(\d+):\d+: ([^\n]+)'
-PYDOCSTYLE_REGEX = r'(.+\/[^\/]+):(\d+).+\n\s+([^\n]+)'
-PYLINT_REGEX = r'(.+\/[^\/]+):(\d+):\d+: ([^\n]+)'
+FLAKE8_REGEX = r'(.+[/\\][^/\\:]+):(\d+):\d+: ([^\n]+)'
+PYDOCSTYLE_REGEX = r'(.+[/\\][^/\\:]+):(\d+).+\n\s+([^\n]+)'
+PYLINT_REGEX = r'(.+[/\\][^/\\:]+):(\d+):\d+: ([^\n]+)'
 
 
 def get_id_line(path: str, line: str, message: str) -> str:
@@ -17,8 +17,8 @@ def get_id_line(path: str, line: str, message: str) -> str:
         code = ''
     else:
         code = lines[int(line) - 1]
-
-    return f'{path}:{code}:{message}'
+    normalized_path = Path(path).as_posix()
+    return f'{normalized_path}:{code}:{message}'
 
 
 def get_id_lines(lint_output: str, regex: str) -> List[str]:
