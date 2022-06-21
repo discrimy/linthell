@@ -29,4 +29,7 @@ contains 3 named [python-like](https://docs.python.org/3/howto/regex.html#:~:tex
 - `line` - line number
 - `message` - linter message
 
+Your regex should matchs all message related to an issue because 
+unfiltered issues are printed by the whole match.
+
 You can test your regex against linter output with [regexr](https://regexr.com/).
