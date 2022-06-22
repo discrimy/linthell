@@ -1,3 +1,5 @@
+"""Universal flakehell replacement for almost any linter you like."""
+
 import re
 import hashlib
 import sys
@@ -9,6 +11,7 @@ FLAKE8_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\
 
 
 def get_id_line(path: str, line: str, message: str) -> str:
+    """Convert path, line and message to id line (path:code_line:message)."""
     lines = Path(path).read_text().splitlines()
     if not lines:
         code = ''
@@ -19,6 +22,7 @@ def get_id_line(path: str, line: str, message: str) -> str:
 
 
 def get_id_lines(lint_output: str, regex: str) -> list[str]:
+    """Search id lines from lint output via provided regex."""
     return [
         get_id_line(
             match.groupdict()['path'],
@@ -30,6 +34,7 @@ def get_id_lines(lint_output: str, regex: str) -> list[str]:
 
 
 def id_line_to_digest(id_line: str) -> str:
+    """Convert MD5 hash as hex from utf-8 id line."""
     return hashlib.md5(id_line.encode('utf-8')).hexdigest()
 
 
