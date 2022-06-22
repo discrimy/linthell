@@ -25,8 +25,7 @@ def get_id_lines(lint_output: str, regex: str) -> list[str]:
             match.groupdict()['line'],
             match.groupdict()['message'],
         )
-        for match
-        in re.finditer(regex, lint_output)
+        for match in re.finditer(regex, lint_output)
     ]
 
 
@@ -88,7 +87,7 @@ def baseline(baseline_file: str, lint_format: str) -> None:
     '--check-outdated',
     is_flag=True,
     default=False,
-    help='Return non-zero status if there are unused ignores in baseline.'
+    help='Return non-zero status if there are unused ignores in baseline.',
 )
 def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
     """Filter your linter output against baseline file.
