@@ -1,8 +1,14 @@
 [tool.poetry]
 name = "linthell"
 version = "0.1.0"
-description = ""
+description = "Universal flakehell replacement for almost any linter you like"
 authors = ["Alexander Bespalov <discrimy.off@gmail.com>"]
+readme = "README.md"
+homepage = "https://gitea.discrimy.ru/discrimy/linthell"
+repository = "https://gitea.discrimy.ru/discrimy/linthell"
+
+[tool.poetry.scripts]
+linthell = "linthell:cli"
 
 [tool.poetry.dependencies]
 python = "^3.10"
