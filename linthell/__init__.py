@@ -38,21 +38,58 @@ def id_line_to_digest(id_line: str) -> str:
 
 @click.group()
 def cli() -> None:
+    """Universal flakehell replacement for almost any linter you like.
+
+    Workflow looks like this: at first, create baseline for each linter you use.
+    Then replace calls your linter with piping their results to `linthell lint` command.
+    """
     pass
 
 
 @cli.command()
-@click.option('--baseline', '-b', 'baseline_file')
-@click.option('--format', '-f', 'lint_format', default=FLAKE8_REGEX)
+@click.option(
+    '--baseline',
+    '-b',
+    'baseline_file',
+    type=click.Path(),
+    help='Path to baseline file with ignores.',
+)
+@click.option(
+    '--format',
+    '-f',
+    'lint_format',
+    default=FLAKE8_REGEX,
+    help='Regex to parse your linter output.',
+)
 def baseline(baseline_file: str, lint_format: str) -> None:
+    """Create baseline file from your linter output.
+
+    Linter output is provided via stdin.
+    """
     id_lines = get_id_lines(sys.stdin.read(), lint_format)
     Path(baseline_file).write_text('\n'.join(sorted(id_lines)))
 
 
 @cli.command()
-@click.option('--baseline', '-b', 'baseline_file', type=click.Path())
-@click.option('--format', '-f', 'lint_format', default=FLAKE8_REGEX)
+@click.option(
+    '--baseline',
+    '-b',
+    'baseline_file',
+    type=click.Path(),
+    help='Path to baseline file with ignores.',
+)
+@click.option(
+    '--format',
+    '-f',
+    'lint_format',
+    default=FLAKE8_REGEX,
+    help='Regex to parse your linter output.',
+)
 def lint(baseline_file: str, lint_format: str) -> None:
+    """Filter your linter output against baseline file.
+
+    Linter output is provided via stdin.
+    """
     has_errors = False
     id_lines = Path(baseline_file).read_text().splitlines()
     digests = {id_line_to_digest(id_line) for id_line in id_lines}

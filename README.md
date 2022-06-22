@@ -6,12 +6,12 @@ All examples are shown with `flake8`, edit them for you case.
 
 At first generate baseline file for every linter you use:
 ```bash
-flake8 . | python linthell.py baseline -b baseline-flake8.txt -f <linter regex>
+flake8 . | linthell baseline -b baseline-flake8.txt -f <linter regex>
 ```
 
 Then lint your project via `linthell`:
 ```bash
-flake8 . | python linthell.py lint -b baseline-flake8.txt -f <linter regex>
+flake8 . | linthell lint -b baseline-flake8.txt -f <linter regex>
 ```
 
 ## Custom linter format
