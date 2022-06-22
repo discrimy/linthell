@@ -85,14 +85,20 @@ def baseline(baseline_file: str, lint_format: str) -> None:
     default=FLAKE8_REGEX,
     help='Regex to parse your linter output.',
 )
-def lint(baseline_file: str, lint_format: str) -> None:
+@click.option(
+    '--check-outdated',
+    is_flag=True,
+    default=False,
+    help='Return non-zero status if there are unused ignores in baseline.'
+)
+def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
     """Filter your linter output against baseline file.
 
     Linter output is provided via stdin.
     """
     has_errors = False
     id_lines = Path(baseline_file).read_text().splitlines()
-    digests = {id_line_to_digest(id_line) for id_line in id_lines}
+    digests = {id_line_to_digest(id_line): False for id_line in id_lines}
     for match in re.finditer(lint_format, sys.stdin.read()):
         path = match.groupdict()['path']
         line = match.groupdict()['line']
@@ -103,6 +109,16 @@ def lint(baseline_file: str, lint_format: str) -> None:
         if digest not in digests:
             print(lint_message)
             has_errors = True
+        else:
+            digests[digest] = True
+
+    if check_outdated and not all(digests.values()):
+        print(
+            'There are outdated entries in your baseline file. '
+            'Consider updating it.'
+        )
+        has_errors = True
+
     if has_errors:
         sys.exit(1)
 
