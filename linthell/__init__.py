@@ -5,9 +5,7 @@ from pathlib import Path
 
 import click
 
-FLAKE8_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+):\d+: (?P<message>[^\n]+)'
-PYDOCSTYLE_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+).+\n\s+(?P<message>[^\n]+)'
-PYLINT_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+):\d+: (?P<message>[^\n]+)'
+FLAKE8_REGEX = r'(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+):\d+: (?P<message>[^\n]+)'  # noqa E501
 
 
 def get_id_line(path: str, line: str, message: str) -> str:
@@ -40,8 +38,9 @@ def id_line_to_digest(id_line: str) -> str:
 def cli() -> None:
     """Universal flakehell replacement for almost any linter you like.
 
-    Workflow looks like this: at first, create baseline for each linter you use.
-    Then replace calls your linter with piping their results to `linthell lint` command.
+    Workflow looks like this: at first, create baseline for each linter
+    you use. Then replace calls your linter with piping their results
+    to `linthell lint` command.
     """
     pass
 
