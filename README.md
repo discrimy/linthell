@@ -33,3 +33,7 @@ Your regex should matchs all message related to an issue because
 unfiltered issues are printed by the whole match.
 
 You can test your regex against linter output with [regexr](https://regexr.com/).
+
+## pre-commit support
+linthell can be used as [pre-commit](https://pre-commit.com/) hook with python-based linters.
+See [pre_commit.py](linthell/pre_commit.py) or `linthell-pre-commit --help` for more.

@@ -1,0 +1,13 @@
+repos:
+  - repo: <Path to linthell git repo>
+    rev: <linthell git revision>
+    hooks:
+      - id: linthell
+        args: [
+          '--baseline=baseline.txt',
+          '--format=(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+).+\n\s+(?P<message>[^\n]+)',
+          '--linter-command=pydocstyle --config=pyproject.toml',
+        ]
+        additional_dependencies:
+          - pydocstyle
+          - toml
