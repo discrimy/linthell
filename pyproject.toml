@@ -9,6 +9,7 @@ repository = "https://gitea.discrimy.ru/discrimy/linthell"
 
 [tool.poetry.scripts]
 linthell = "linthell:cli"
+linthell-pre-commit = "linthell.pre_commit:cli"
 
 [tool.poetry.dependencies]
 python = "^3.10"
