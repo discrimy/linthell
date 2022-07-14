@@ -1,7 +1,7 @@
 """Thin wrapper around `linthell lint` command with embedded linter execution."""
 import shlex
 import subprocess
-from typing import List
+from typing import Tuple
 
 import click
 
@@ -22,7 +22,7 @@ import click
 )
 @click.option('--linter-command', type=click.STRING, help='Linter command with options to execute.')
 @click.argument('files', nargs=-1, type=click.Path())
-def cli(baseline_file: str, lint_format: str, linter_command: str, files: List[str]) -> None:
+def cli(baseline_file: str, lint_format: str, linter_command: str, files: Tuple[str, ...]) -> None:
     """Linthell with embedded linter executing.
 
     The purpose of this command is to be the thin wrapper around `linthell lint` command,
