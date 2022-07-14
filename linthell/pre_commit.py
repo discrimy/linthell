@@ -35,11 +35,16 @@ def cli(baseline_file: str, lint_format: str, linter_command: str, files: List[s
     Also linter mentioned in `--linter-command` must present inside venv of hook, so include it and its dependencies
     in `additional_dependencies` section. See `.pre-commit-config.example.yaml` for the reference.
     """
-    linter_output = subprocess.getoutput(shlex.split(linter_command) + [' '.join(files)])
+    linter_process = subprocess.run(
+        [*shlex.split(linter_command), *files],
+        text=True,
+        stdout=subprocess.PIPE,
+        check=False,
+    )
     process = subprocess.run(
         ['linthell', 'lint', '-b', baseline_file, '-f', lint_format],
         text=True,
-        input=linter_output,
+        input=linter_process.stdout,
         stdout=subprocess.PIPE,
     )
     print(process.stdout, end='')
