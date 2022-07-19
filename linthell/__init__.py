@@ -64,7 +64,6 @@ def cli() -> None:
     'baseline_file',
     type=click.Path(),
     help='Path to baseline file with ignores.',
-    required=True,
 )
 @click.option(
     '--format',
@@ -72,7 +71,6 @@ def cli() -> None:
     'lint_format',
     default=FLAKE8_REGEX,
     help='Regex to parse your linter output.',
-    required=True,
 )
 def baseline(baseline_file: str, lint_format: str) -> None:
     """Create baseline file from your linter output.

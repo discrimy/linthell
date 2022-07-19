@@ -13,20 +13,17 @@ import click
     'baseline_file',
     type=click.Path(),
     help='Path to baseline file with ignores.',
-    required=True,
 )
 @click.option(
     '--format',
     '-f',
     'lint_format',
     help='Regex to parse your linter output.',
-    required=True,
 )
 @click.option(
     '--linter-command',
     type=click.STRING,
     help='Linter command with options to execute.',
-    required=True,
 )
 @click.argument('files', nargs=-1, type=click.Path())
 def cli(baseline_file: str, lint_format: str, linter_command: str, files: Tuple[str, ...]) -> None:
