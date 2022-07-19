@@ -43,6 +43,13 @@ def id_line_to_digest(id_line: str) -> str:
 def cli() -> None:
     """Universal flakehell replacement for almost any linter you like.
 
+    The main concept of this tool is baseline file. It contains all errors that should be ignored
+    and be fixed later. After baseline is generated, all errors inside this file are ignored but new ones not.
+    So you can adapt new linter smoothly without fixing old code. To generate and use baseline, you should
+    provide the path to this file, linter output and regex to parse it. Regex must contain three named groups
+    `path`, `line` and `message` and must be the same in `baseline` and `lint` commands of the same baseline file
+    and linter.
+
     Workflow looks like this: at first, create baseline for each linter
     you use. Then replace calls your linter with piping their results
     to `linthell lint` command.
@@ -99,6 +106,10 @@ def baseline(baseline_file: str, lint_format: str) -> None:
 )
 def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
     """Filter your linter output against baseline file.
+
+    It scans the linter output against baseline file and filters it. If all errors are ignored (or there are no errors),
+    then it prints nothing and exits with code 0. Otherwise it prints the whole match of format regex as error
+    description for each unfiltered error and exists with code 1.
 
     Linter output is provided via stdin.
     """
