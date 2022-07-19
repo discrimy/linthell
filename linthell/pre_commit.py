@@ -20,7 +20,11 @@ import click
     'lint_format',
     help='Regex to parse your linter output.',
 )
-@click.option('--linter-command', type=click.STRING, help='Linter command with options to execute.')
+@click.option(
+    '--linter-command',
+    type=click.STRING,
+    help='Linter command with options to execute.',
+)
 @click.argument('files', nargs=-1, type=click.Path())
 def cli(baseline_file: str, lint_format: str, linter_command: str, files: Tuple[str, ...]) -> None:
     """Linthell with embedded linter executing.
@@ -30,10 +34,17 @@ def cli(baseline_file: str, lint_format: str, linter_command: str, files: Tuple[
 
     A linter is called in format `<linter-command> <files to proceed separated with ' '>`, its return code is ignored.
     After the output of linter is passed to `linthell lint` command alongside with basefile location and lint format.
+    The hook requires to pass `--baseline`, `--format` and `--linter-command` in `args` section.
 
-    pre-commit hook requires to pass options `--baseline`, `--format` and `--linter-command` in `args` section.
-    Also linter mentioned in `--linter-command` must present inside venv of hook, so include it and its dependencies
-    in `additional_dependencies` section. See `.pre-commit-config.example.yaml` for the reference.
+    There are two ways to adapt linthell as pre-commit hook:
+
+    1. As python linter: if your linter is python-based (flake8, pydocstyle) then you can use default
+    `language` and `entrypoint` configuration of hook.
+
+    2. As system linter: if your linter is not python-based (or requires to be installed inside venv of your project
+    like pylint do) then you must set `language: system` and `entrypoint: <command to launch linthell-pre-commit>`.
+    pre-commit runs hooks outside venv, so you should adapt hook config to run the command inside it.
+    For example, pylint with poetry as venv manager can be launched via `entrypoint: poetry run pylint ...`.
     """
     linter_process = subprocess.run(
         [*shlex.split(linter_command), *files],
