@@ -1,5 +1,4 @@
-"""
-Wrapper for pre-commit support.
+"""Wrapper for pre-commit support.
 
 Thin wrapper around `linthell lint` command with embedded linter execution.
 """
@@ -9,28 +8,33 @@ from typing import Tuple
 
 import click
 
+from linthell.cli import cli
 
-@click.command()
+
+@cli.command()
 @click.option(
     '--baseline',
     '-b',
     'baseline_file',
     type=click.Path(),
     help='Path to baseline file with ignores.',
+    required=True,
 )
 @click.option(
     '--format',
     '-f',
     'lint_format',
     help='Regex to parse your linter output.',
+    required=True,
 )
 @click.option(
     '--linter-command',
     type=click.STRING,
     help='Linter command with options to execute.',
+    required=True,
 )
 @click.argument('files', nargs=-1, type=click.Path())
-def cli(
+def lint_pre_commit(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
@@ -76,7 +80,3 @@ def cli(
     print(process.stdout, end='')
     if process.returncode:
         exit(process.returncode)
-
-
-if __name__ == '__main__':
-    cli()

@@ -28,3 +28,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 skip-string-normalization = true
 line-length = 79
+
+[tool.pydocstyle]
+ignore = ["D100", "D104", "D213"]

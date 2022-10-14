@@ -9,5 +9,4 @@ repos:
           '--linter-command=pydocstyle --config=pyproject.toml',
         ]
         additional_dependencies:
-          - pydocstyle
-          - toml
+          - pydocstyle[toml]
