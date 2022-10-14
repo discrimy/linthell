@@ -36,4 +36,10 @@ You can test your regex against linter output with [regexr](https://regexr.com/)
 
 ## pre-commit support
 linthell can be used as [pre-commit](https://pre-commit.com/) hook with python-based linters.
-See [pre_commit.py](linthell/pre_commit.py) or `linthell-pre-commit --help` for more.
+See `linthell lint-pre-commit --help` for more. 
+
+## Config file
+`linthell` can inject params from config file (`linthell --config path/to/config.ini`). 
+`common` section applies for all commands, command specific config are specified by their name
+section, for example `lint`. Keys must have same name as
+argument name of their command function. For example, `baseline_file`.

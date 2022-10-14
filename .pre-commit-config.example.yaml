@@ -9,5 +9,9 @@ repos:
           '--linter-command=pydocstyle --config=pyproject.toml',
         ]
         additional_dependencies:
-          - pydocstyle
-          - toml
+          - pydocstyle[toml]
+      # or
+      - id: linthell
+        entry: linthell --config linthell.ini lint-pre-commit
+        additional_dependencies:
+          - pydocstyle[toml]
