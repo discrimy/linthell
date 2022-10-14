@@ -3,8 +3,9 @@
 import re
 import hashlib
 import sys
+from configparser import ConfigParser
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Dict
 
 import click
 
@@ -39,8 +40,26 @@ def id_line_to_digest(id_line: str) -> str:
     return hashlib.md5(id_line.encode('utf-8')).hexdigest()
 
 
+def get_dict_or_empty(config: ConfigParser, section: str) -> Dict[str, str]:
+    """Return dict of section or empty dict if section is missing"""
+    try:
+        return dict(config[section])
+    except KeyError:
+        return {}
+
+
 @click.group()
-def cli() -> None:
+@click.option(
+    '--config',
+    'config_path',
+    help=(
+        'Path to .ini config file. "common" section applies for all commands, '
+        'command specific config are specified by their name section, for example "lint".'
+    ),
+    type=click.Path(dir_okay=False),
+)
+@click.pass_context
+def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     """Universal flakehell replacement for almost any linter you like.
 
     The main concept of this tool is baseline file. It contains all errors that should be ignored
@@ -54,7 +73,18 @@ def cli() -> None:
     you use. Then replace calls your linter with piping their results
     to `linthell lint` command.
     """
-    pass
+    if config_path:
+        command_name = ctx.invoked_subcommand
+        config = ConfigParser()
+        config.read(config_path)
+        common_section = get_dict_or_empty(config, 'common')
+        default_map = {
+            command_name: {
+                **common_section,
+                **get_dict_or_empty(config, command_name),
+            }
+        }
+        ctx.default_map = default_map
 
 
 @cli.command()
@@ -64,6 +94,7 @@ def cli() -> None:
     'baseline_file',
     type=click.Path(),
     help='Path to baseline file with ignores.',
+    required=True,
 )
 @click.option(
     '--format',
@@ -71,6 +102,7 @@ def cli() -> None:
     'lint_format',
     default=FLAKE8_REGEX,
     help='Regex to parse your linter output.',
+    required=True,
 )
 def baseline(baseline_file: str, lint_format: str) -> None:
     """Create baseline file from your linter output.
@@ -88,6 +120,7 @@ def baseline(baseline_file: str, lint_format: str) -> None:
     'baseline_file',
     type=click.Path(),
     help='Path to baseline file with ignores.',
+    required=True,
 )
 @click.option(
     '--format',
@@ -95,18 +128,20 @@ def baseline(baseline_file: str, lint_format: str) -> None:
     'lint_format',
     default=FLAKE8_REGEX,
     help='Regex to parse your linter output.',
+    required=True,
 )
 @click.option(
     '--check-outdated',
     is_flag=True,
     default=False,
     help='Return non-zero status if there are unused ignores in baseline.',
+    required=True,
 )
 def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
     """Filter your linter output against baseline file.
 
     It scans the linter output against baseline file and filters it. If all errors are ignored (or there are no errors),
-    then it prints nothing and exits with code 0. Otherwise it prints the whole match of format regex as error
+    then it prints nothing and exits with code 0, otherwise it prints the whole match of format regex as error
     description for each unfiltered error and exists with code 1.
 
     Linter output is provided via stdin.
