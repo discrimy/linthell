@@ -13,7 +13,7 @@ from linthell.utils import get_dict_or_empty
     help=(
         'Path to .ini config file. "common" section applies for all commands, '
         'command specific config are specified by their name section, '
-        'for example "lint". Keys must have same name as argument name of'
+        'for example "lint". Keys must have same name as argument name of '
         'their command function. For example, "baseline_file".'
     ),
     type=click.Path(dir_okay=False),
