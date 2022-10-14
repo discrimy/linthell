@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linthell"
-version = "0.3.2"
+version = "0.4.0"
 description = "Universal flakehell replacement for almost any linter you like"
 authors = ["Alexander Bespalov <discrimy.off@gmail.com>"]
 readme = "README.md"
