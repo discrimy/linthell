@@ -33,11 +33,18 @@ from linthell.cli import cli
     help='Linter command with options to execute.',
     required=True,
 )
+@click.option(
+    '--linter-output',
+    type=click.Choice(('stdout', 'stderr')),
+    help='Linter output',
+    default='stdout',
+)
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_pre_commit(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
+    linter_output: str,
     files: Tuple[str, ...],
 ) -> None:
     """Linthell with embedded linter executing.
@@ -69,12 +76,17 @@ def lint_pre_commit(
         [*shlex.split(linter_command), *files],
         text=True,
         stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         check=False,
     )
+    if linter_output == 'stdout':
+        output = linter_process.stdout
+    else:
+        output = linter_process.stderr
     process = subprocess.run(
         ['linthell', 'lint', '-b', baseline_file, '-f', lint_format],
         text=True,
-        input=linter_process.stdout,
+        input=output,
         stdout=subprocess.PIPE,
     )
     print(process.stdout, end='')
