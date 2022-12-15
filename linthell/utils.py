@@ -7,11 +7,14 @@ from typing import Dict, List
 
 def get_id_line(path: str, line: str, message: str) -> str:
     """Convert path, line and message to id line (path:code_line:message)."""
-    lines = Path(path).read_text().splitlines()
-    if not lines:
+    if not line:
         code = ''
     else:
-        code = lines[int(line) - 1]
+        lines = Path(path).read_text().splitlines()
+        if not lines:
+            code = ''
+        else:
+            code = lines[int(line) - 1]
     normalized_path = Path(path).as_posix()
     return f'{normalized_path}:{code}:{message}'
 
