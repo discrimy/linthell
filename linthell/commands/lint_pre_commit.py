@@ -39,12 +39,23 @@ from linthell.cli import cli
     help='Linter output',
     default='stdout',
 )
+@click.option(
+    '--update-baseline-file',
+    type=click.BOOL,
+    help=(
+        'Update baseline file to be consistent with current code. '
+        'Useful when you need to update baseline based on pre-commit filters'
+    ),
+    is_flag=True,
+    default=False,
+)
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_pre_commit(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
     linter_output: str,
+    update_baseline_file: bool,
     files: Tuple[str, ...],
 ) -> None:
     """Linthell with embedded linter executing.
@@ -90,5 +101,14 @@ def lint_pre_commit(
         stdout=subprocess.PIPE,
     )
     print(process.stdout, end='')
+
+    if update_baseline_file:
+        subprocess.run(
+            ['linthell', 'baseline', '-b', baseline_file, '-f', lint_format],
+            text=True,
+            input=output,
+            check=True,
+        )
+
     if process.returncode:
         exit(process.returncode)
