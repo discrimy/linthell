@@ -1,8 +1,12 @@
 import hashlib
 import re
+import shlex
+import subprocess
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
+
+from typing_extensions import Literal
 
 
 def get_id_line(path: str, line: str, message: str) -> str:
@@ -42,3 +46,23 @@ def get_dict_or_empty(config: ConfigParser, section: str) -> Dict[str, str]:
         return dict(config[section])
     except KeyError:
         return {}
+
+
+def run_linter_and_get_output(
+    linter_command: str,
+    files: Tuple[str, ...],
+    linter_output: Literal['stdout', 'stderr'],
+) -> str:
+    linter_process = subprocess.run(
+        [*shlex.split(linter_command), *files],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+        check=False,
+    )
+    if linter_output == 'stdout':
+        output = linter_process.stdout
+    else:
+        output = linter_process.stderr
+    return output

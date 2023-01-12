@@ -1,14 +1,12 @@
-"""Wrapper for pre-commit support.
+"""linthell lint alternative for pre-commit"""
 
-Thin wrapper around `linthell lint` command with embedded linter execution.
-"""
 import shlex
 import subprocess
 from typing import Tuple
 
 import click
 
-from linthell.cli import cli
+from linthell import cli
 
 
 @cli.command()
@@ -50,7 +48,7 @@ from linthell.cli import cli
     default=False,
 )
 @click.argument('files', nargs=-1, type=click.Path())
-def lint_pre_commit(
+def pre_commit_lint(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
