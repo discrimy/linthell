@@ -3,12 +3,11 @@ from pathlib import Path
 
 import click
 
-from linthell.cli import cli
 from linthell.defaults import FLAKE8_REGEX
-from linthell.utils import get_id_lines
+from linthell.utils.id_lines import get_id_lines
 
 
-@cli.command()
+@click.command()
 @click.option(
     '--baseline',
     '-b',
@@ -25,7 +24,7 @@ from linthell.utils import get_id_lines
     help='Regex to parse your linter output.',
     required=True,
 )
-def baseline(baseline_file: str, lint_format: str) -> None:
+def baseline_cli(baseline_file: str, lint_format: str) -> None:
     """Create baseline file from your linter output.
 
     Linter output is provided via stdin.

@@ -4,12 +4,11 @@ from pathlib import Path
 
 import click
 
-from linthell.cli import cli
 from linthell.defaults import FLAKE8_REGEX
-from linthell.utils import id_line_to_digest, get_id_line
+from linthell.utils.id_lines import id_line_to_digest, get_id_line
 
 
-@cli.command()
+@click.command()
 @click.option(
     '--baseline',
     '-b',
@@ -33,7 +32,9 @@ from linthell.utils import id_line_to_digest, get_id_line
     help='Return non-zero status if there are unused ignores in baseline.',
     required=True,
 )
-def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
+def lint_cli(
+    baseline_file: str, lint_format: str, check_outdated: bool
+) -> None:
     """Filter your linter output against baseline file.
 
     It scans the linter output against baseline file and filters it. If all

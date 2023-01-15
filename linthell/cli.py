@@ -3,7 +3,13 @@ from typing import Optional
 
 import click
 
-from linthell.utils import get_dict_or_empty
+from linthell.commands.lint import lint_cli
+from linthell.commands.baseline import baseline_cli
+from linthell.commands.pre_commit.cli import pre_commit_cli
+from linthell.utils.config import (
+    config_to_dict,
+    create_config_dict,
+)
 
 
 @click.group()
@@ -36,14 +42,15 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     to `linthell lint` command.
     """
     if config_path:
-        command_name = ctx.invoked_subcommand
         config = ConfigParser()
         config.read(config_path)
-        common_section = get_dict_or_empty(config, 'common')
-        default_map = {
-            command_name: {
-                **common_section,
-                **get_dict_or_empty(config, command_name),
-            }
-        }
-        ctx.default_map = default_map
+        sections = config_to_dict(config)
+        common = sections.pop('common', {})
+        ctx.default_map = create_config_dict(
+            common, sections, ctx.command.commands
+        )
+
+
+cli.add_command(lint_cli, 'lint')
+cli.add_command(baseline_cli, 'baseline')
+cli.add_command(pre_commit_cli, 'pre-commit')

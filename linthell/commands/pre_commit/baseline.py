@@ -1,16 +1,16 @@
-"""linthell baseline alternative for pre-commit"""
+"""linthell baseline alternative for pre_commit"""
 
 import subprocess
 from typing import Tuple, Optional
 
 import click
+from typing_extensions import Literal
 
-from linthell import cli
-from linthell.utils import run_linter_and_get_output
-from linthell.pre_commit import get_all_files_by_hook
+from linthell.utils.linters import run_linter_and_get_output
+from linthell.utils.pre_commit import get_all_files_by_hook
 
 
-@cli.command()
+@click.command()
 @click.option(
     '--baseline',
     '-b',
@@ -41,15 +41,15 @@ from linthell.pre_commit import get_all_files_by_hook
 @click.option(
     '--hook-name',
     type=click.STRING,
-    help='Update baseline based on all files from pre-commit hook',
+    help='Update baseline based on all files from pre_commit hook',
     required=False,
 )
 @click.argument('files', nargs=-1, type=click.Path())
-def pre_commit_baseline(
+def baseline_cli(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
-    linter_output: str,
+    linter_output: Literal['stdout', 'stderr'],
     hook_name: Optional[str],
     files: Tuple[str, ...],
 ) -> None:
