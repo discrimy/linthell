@@ -1,5 +1,5 @@
 - id: linthell
   name: linthell
-  entry: linthell lint-pre-commit
+  entry: linthell pre-commit lint
   language: python
   types: [python]
