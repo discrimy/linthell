@@ -1,15 +1,50 @@
+"""CLI that lints linter output based on baseline file."""
+
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Set
 
 import click
 
-from linthell.cli import cli
-from linthell.defaults import FLAKE8_REGEX
-from linthell.utils import id_line_to_digest, get_id_line
+from linthell.utils.id_lines import id_line_to_digest, get_id_line
 
 
-@cli.command()
+@dataclass
+class LintReport:
+    """Report from linting."""
+
+    errors: List[str]
+
+
+def lint(
+    digests: Set[str], linter_output: str, lint_format: str
+) -> LintReport:
+    """Lint linter output based on known errors' digests."""
+    errors = []
+
+    for match in re.finditer(lint_format, linter_output):
+        path = match.groupdict()['path']
+        line = match.groupdict()['line']
+        message = match.groupdict()['message']
+        lint_message = match.group(0)
+        id_line = get_id_line(path, line, message)
+        digest = id_line_to_digest(id_line)
+        if digest not in digests:
+            errors.append(lint_message)
+
+    return LintReport(errors)
+
+
+def get_digests_from_baseline(baseline_file: Path) -> Set[str]:
+    """Get digests from provided baseline file."""
+    id_lines = Path(baseline_file).read_text().splitlines()
+    digests = {id_line_to_digest(id_line) for id_line in id_lines}
+    return digests
+
+
+@click.command()
 @click.option(
     '--baseline',
     '-b',
@@ -22,18 +57,10 @@ from linthell.utils import id_line_to_digest, get_id_line
     '--format',
     '-f',
     'lint_format',
-    default=FLAKE8_REGEX,
     help='Regex to parse your linter output.',
     required=True,
 )
-@click.option(
-    '--check-outdated',
-    is_flag=True,
-    default=False,
-    help='Return non-zero status if there are unused ignores in baseline.',
-    required=True,
-)
-def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
+def lint_cli(baseline_file: str, lint_format: str) -> None:
     """Filter your linter output against baseline file.
 
     It scans the linter output against baseline file and filters it. If all
@@ -42,29 +69,15 @@ def lint(baseline_file: str, lint_format: str, check_outdated: bool) -> None:
     as error description for each unfiltered error and exists with code 1.
 
     Linter output is provided via stdin.
+
+    Usage:
+    $ <linter command> | linthell lint
     """
-    has_errors = False
-    id_lines = Path(baseline_file).read_text().splitlines()
-    digests = {id_line_to_digest(id_line): False for id_line in id_lines}
-    for match in re.finditer(lint_format, sys.stdin.read()):
-        path = match.groupdict()['path']
-        line = match.groupdict()['line']
-        message = match.groupdict()['message']
-        lint_message = match.group(0)
-        id_line = get_id_line(path, line, message)
-        digest = id_line_to_digest(id_line)
-        if digest not in digests:
-            print(lint_message)
-            has_errors = True
-        else:
-            digests[digest] = True
+    linter_output = sys.stdin.read()
+    digests = get_digests_from_baseline(Path(baseline_file))
+    report = lint(digests, linter_output, lint_format)
 
-    if check_outdated and not all(digests.values()):
-        print(
-            'There are outdated entries in your baseline file. '
-            'Consider updating it.'
-        )
-        has_errors = True
-
-    if has_errors:
+    if report.errors:
+        for error_message in report.errors:
+            print(error_message)
         sys.exit(1)

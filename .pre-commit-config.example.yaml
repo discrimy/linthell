@@ -3,6 +3,7 @@ repos:
     rev: <linthell git revision>
     hooks:
       - id: linthell
+        name: linthell in pre-commit env without config file
         args: [
           '--baseline=baseline.txt',
           '--format=(?P<path>[a-zA-Z0-9\._-]+(?:[\\/][a-zA-Z0-9\._-]+)*):(?P<line>\d+).+\n\s+(?P<message>[^\n]+)',
@@ -12,6 +13,14 @@ repos:
           - pydocstyle[toml]
       # or
       - id: linthell
-        entry: linthell --config linthell.ini lint-pre-commit
+        name: linthell in pre-commit env with config file
+        entry: linthell --config linthell.ini pre-commit lint
+        additional_dependencies:
+          - pydocstyle[toml]
+      # or
+      - id: linthell
+        name: linthell in global env with config file (poetry example)
+        language: system
+        entry: poetry run linthell --config linthell.ini pre-commit lint
         additional_dependencies:
           - pydocstyle[toml]

@@ -1,9 +1,14 @@
+"""Main CLI module."""
+
 from configparser import ConfigParser
+from contextlib import suppress
 from typing import Optional
 
 import click
 
-from linthell.utils import get_dict_or_empty
+from linthell.commands.lint import lint_cli
+from linthell.commands.baseline import baseline_cli
+from linthell.utils.config import create_config_dict
 
 
 @click.group()
@@ -24,7 +29,7 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
 
     The main concept of this tool is baseline file. It contains all errors
     that should be ignored and be fixed later. After baseline is generated,
-    all errors inside this file are ignored but new ones not. So you can adapt
+    all errors inside this file are ignored but new ones not, so you can adapt
     new linter smoothly without fixing old code. To generate and use baseline,
     you should provide the path to this file, linter output and regex to parse
     it. Regex must contain three named groups `path`, `line` and `message`
@@ -34,16 +39,22 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     Workflow looks like this: at first, create baseline for each linter
     you use. Then replace calls your linter with piping their results
     to `linthell lint` command.
+
+    Example:
+    $ <your linter> | linthell baseline -b baseline.ini -f <regex to parse>
+    $ <your linter> | linthell lint -b baseline.ini -f <regex to parse>
     """
     if config_path:
-        command_name = ctx.invoked_subcommand
-        config = ConfigParser()
-        config.read(config_path)
-        common_section = get_dict_or_empty(config, 'common')
-        default_map = {
-            command_name: {
-                **common_section,
-                **get_dict_or_empty(config, command_name),
-            }
-        }
-        ctx.default_map = default_map
+        config_parser = ConfigParser()
+        config_parser.read(config_path)
+        ctx.default_map = create_config_dict(
+            config_parser, ctx.command.commands
+        )
+
+
+cli.add_command(lint_cli, 'lint')
+cli.add_command(baseline_cli, 'baseline')
+with suppress(ImportError):
+    from linthell.commands.pre_commit.cli import pre_commit_cli
+
+    cli.add_command(pre_commit_cli, 'pre-commit')

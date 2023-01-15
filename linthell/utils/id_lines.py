@@ -1,8 +1,9 @@
+"""Utilities for ID Lines and digests conversions."""
+
 import hashlib
 import re
-from configparser import ConfigParser
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 
 def get_id_line(path: str, line: str, message: str) -> str:
@@ -34,11 +35,3 @@ def get_id_lines(lint_output: str, regex: str) -> List[str]:
 def id_line_to_digest(id_line: str) -> str:
     """Convert MD5 hash as hex from utf-8 id line."""
     return hashlib.md5(id_line.encode('utf-8')).hexdigest()
-
-
-def get_dict_or_empty(config: ConfigParser, section: str) -> Dict[str, str]:
-    """Return dict of section or empty dict if section is missing."""
-    try:
-        return dict(config[section])
-    except KeyError:
-        return {}
