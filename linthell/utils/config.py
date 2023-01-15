@@ -34,11 +34,11 @@ def create_default_map(
 
 
 def create_config_dict(
-    common: Dict[str, str],
     config_parser: ConfigParser,
     commands: Dict[str, Command],
 ):
     sections = config_to_dict(config_parser)
+    common = sections.pop('common', {})
     config = create_default_map(common, commands)
     for path, values in sorted(sections.items(), key=lambda pair: pair[0]):
         get_by_dotted_path(config, path).update(**values)

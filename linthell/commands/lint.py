@@ -1,11 +1,36 @@
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Set
 
 import click
 
 from linthell.defaults import FLAKE8_REGEX
 from linthell.utils.id_lines import id_line_to_digest, get_id_line
+
+
+@dataclass
+class LintReport:
+    errors: List[str]
+
+
+def lint(
+    digests: Set[str], linter_output: str, lint_format: str
+) -> LintReport:
+    errors = []
+
+    for match in re.finditer(lint_format, linter_output):
+        path = match.groupdict()['path']
+        line = match.groupdict()['line']
+        message = match.groupdict()['message']
+        lint_message = match.group(0)
+        id_line = get_id_line(path, line, message)
+        digest = id_line_to_digest(id_line)
+        if digest not in digests:
+            errors.append(lint_message)
+
+    return LintReport(errors)
 
 
 @click.command()
@@ -44,28 +69,17 @@ def lint_cli(
 
     Linter output is provided via stdin.
     """
-    has_errors = False
-    id_lines = Path(baseline_file).read_text().splitlines()
-    digests = {id_line_to_digest(id_line): False for id_line in id_lines}
-    for match in re.finditer(lint_format, sys.stdin.read()):
-        path = match.groupdict()['path']
-        line = match.groupdict()['line']
-        message = match.groupdict()['message']
-        lint_message = match.group(0)
-        id_line = get_id_line(path, line, message)
-        digest = id_line_to_digest(id_line)
-        if digest not in digests:
-            print(lint_message)
-            has_errors = True
-        else:
-            digests[digest] = True
+    linter_output = sys.stdin.read()
+    digests = get_digests_from_baseline(Path(baseline_file))
+    report = lint(digests, linter_output, lint_format)
 
-    if check_outdated and not all(digests.values()):
-        print(
-            'There are outdated entries in your baseline file. '
-            'Consider updating it.'
-        )
-        has_errors = True
-
-    if has_errors:
+    if report.errors:
+        for error_message in report.errors:
+            print(error_message)
         sys.exit(1)
+
+
+def get_digests_from_baseline(baseline_file: Path) -> Set[str]:
+    id_lines = Path(baseline_file).read_text().splitlines()
+    digests = {id_line_to_digest(id_line) for id_line in id_lines}
+    return digests

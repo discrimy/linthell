@@ -6,10 +6,7 @@ import click
 
 from linthell.commands.lint import lint_cli
 from linthell.commands.baseline import baseline_cli
-from linthell.utils.config import (
-    config_to_dict,
-    create_config_dict,
-)
+from linthell.utils.config import create_config_dict
 
 
 @click.group()
@@ -42,12 +39,10 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     to `linthell lint` command.
     """
     if config_path:
-        config = ConfigParser()
-        config.read(config_path)
-        sections = config_to_dict(config)
-        common = sections.pop('common', {})
+        config_parser = ConfigParser()
+        config_parser.read(config_path)
         ctx.default_map = create_config_dict(
-            common, sections, ctx.command.commands
+            config_parser, ctx.command.commands
         )
 
 
@@ -55,4 +50,5 @@ cli.add_command(lint_cli, 'lint')
 cli.add_command(baseline_cli, 'baseline')
 with suppress(ImportError):
     from linthell.commands.pre_commit.cli import pre_commit_cli
+
     cli.add_command(pre_commit_cli, 'pre-commit')

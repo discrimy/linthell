@@ -1,10 +1,19 @@
 import sys
 from pathlib import Path
+from typing import List
 
 import click
 
 from linthell.defaults import FLAKE8_REGEX
 from linthell.utils.id_lines import get_id_lines
+
+
+def baseline(linter_output: str, lint_format: str) -> List[str]:
+    return get_id_lines(linter_output, lint_format)
+
+
+def save_baseline(baseline_file: Path, id_lines: List[str]) -> None:
+    baseline_file.write_text('\n'.join(sorted(id_lines)))
 
 
 @click.command()
@@ -29,5 +38,6 @@ def baseline_cli(baseline_file: str, lint_format: str) -> None:
 
     Linter output is provided via stdin.
     """
-    id_lines = get_id_lines(sys.stdin.read(), lint_format)
-    Path(baseline_file).write_text('\n'.join(sorted(id_lines)))
+    linter_output = sys.stdin.read()
+    id_lines = baseline(linter_output, lint_format)
+    save_baseline(Path(baseline_file), id_lines)

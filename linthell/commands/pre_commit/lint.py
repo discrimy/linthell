@@ -2,9 +2,15 @@
 
 import shlex
 import subprocess
+import sys
+from pathlib import Path
 from typing import Tuple
 
 import click
+from typing_extensions import Literal
+
+from linthell.commands.lint import lint, get_digests_from_baseline
+from linthell.utils.linters import run_linter_and_get_output
 
 
 @click.command()
@@ -35,23 +41,12 @@ import click
     help='Linter output',
     default='stdout',
 )
-@click.option(
-    '--update-baseline-file',
-    type=click.BOOL,
-    help=(
-        'Update baseline file to be consistent with current code. '
-        'Useful when you need to update baseline based on pre_commit filters'
-    ),
-    is_flag=True,
-    default=False,
-)
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_cli(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
-    linter_output: str,
-    update_baseline_file: bool,
+    linter_output: Literal['stdout', 'stderr'],
     files: Tuple[str, ...],
 ) -> None:
     """Linthell with embedded linter executing.
@@ -79,32 +74,11 @@ def lint_cli(
     inside it. For example, pylint with poetry as venv manager can be launched
     via `entrypoint: poetry run pylint ...`.
     """
-    linter_process = subprocess.run(
-        [*shlex.split(linter_command), *files],
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
-    if linter_output == 'stdout':
-        output = linter_process.stdout
-    else:
-        output = linter_process.stderr
-    process = subprocess.run(
-        ['linthell', 'lint', '-b', baseline_file, '-f', lint_format],
-        text=True,
-        input=output,
-        stdout=subprocess.PIPE,
-    )
-    print(process.stdout, end='')
+    output = run_linter_and_get_output(linter_command, files, linter_output)
 
-    if update_baseline_file:
-        subprocess.run(
-            ['linthell', 'baseline', '-b', baseline_file, '-f', lint_format],
-            text=True,
-            input=output,
-            check=True,
-        )
-
-    if process.returncode:
-        exit(process.returncode)
+    digests = get_digests_from_baseline(Path(baseline_file))
+    report = lint(digests, output, lint_format)
+    if report.errors:
+        for error_message in report.errors:
+            print(error_message)
+        sys.exit(1)

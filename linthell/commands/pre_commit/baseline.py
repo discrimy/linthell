@@ -1,11 +1,13 @@
 """linthell baseline alternative for pre_commit"""
 
 import subprocess
+from pathlib import Path
 from typing import Tuple, Optional
 
 import click
 from typing_extensions import Literal
 
+from linthell.commands.baseline import baseline, save_baseline
 from linthell.utils.linters import run_linter_and_get_output
 from linthell.utils.pre_commit import get_all_files_by_hook
 
@@ -64,9 +66,5 @@ def baseline_cli(
 
     output = run_linter_and_get_output(linter_command, files, linter_output)
 
-    baseline_process = subprocess.run(
-        ['linthell', 'baseline', '-b', baseline_file, '-f', lint_format],
-        text=True,
-        input=output,
-    )
-    exit(baseline_process.returncode)
+    id_lines = baseline(output, lint_format)
+    save_baseline(Path(baseline_file), id_lines)
