@@ -1,4 +1,4 @@
-"""linthell lint alternative for pre_commit"""
+"""Lint CLI with pre-commit integration."""
 
 import sys
 from pathlib import Path
@@ -38,7 +38,7 @@ from linthell.utils.linters import run_linter_and_get_output
     type=click.Choice(('stdout', 'stderr')),
     help='Where linter outputs his errors',
     default='stdout',
-show_default=True,
+    show_default=True,
 )
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_cli(
@@ -48,7 +48,7 @@ def lint_cli(
     linter_output: Literal['stdout', 'stderr'],
     files: Tuple[str, ...],
 ) -> None:
-    """linthell lint command for pre-commit workflow.
+    """Linthell lint command for pre-commit workflow.
 
     The purpose of this command is to be the thin wrapper around
     `linthell lint` command, but linter is called inside command. Such behavior

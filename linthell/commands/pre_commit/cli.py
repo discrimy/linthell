@@ -1,3 +1,5 @@
+"""Pre-commit integration CLI."""
+
 import click
 
 from linthell.commands.pre_commit.baseline import baseline_cli

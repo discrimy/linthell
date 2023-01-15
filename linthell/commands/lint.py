@@ -1,3 +1,5 @@
+"""CLI that lints linter output based on baseline file."""
+
 import re
 import sys
 from dataclasses import dataclass
@@ -6,13 +8,12 @@ from typing import List, Set
 
 import click
 
-from linthell.defaults import FLAKE8_REGEX
 from linthell.utils.id_lines import id_line_to_digest, get_id_line
 
 
 @dataclass
 class LintReport:
-    """Report from linting"""
+    """Report from linting."""
 
     errors: List[str]
 
@@ -20,7 +21,7 @@ class LintReport:
 def lint(
     digests: Set[str], linter_output: str, lint_format: str
 ) -> LintReport:
-    """Lint linter output based on known errors' digests"""
+    """Lint linter output based on known errors' digests."""
     errors = []
 
     for match in re.finditer(lint_format, linter_output):
@@ -37,7 +38,7 @@ def lint(
 
 
 def get_digests_from_baseline(baseline_file: Path) -> Set[str]:
-    """Get digests from provided baseline file"""
+    """Get digests from provided baseline file."""
     id_lines = Path(baseline_file).read_text().splitlines()
     digests = {id_line_to_digest(id_line) for id_line in id_lines}
     return digests

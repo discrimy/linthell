@@ -1,3 +1,5 @@
+"""Utilities for ID Lines and digests conversions."""
+
 import hashlib
 import re
 from pathlib import Path

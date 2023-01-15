@@ -1,7 +1,7 @@
-"""linthell baseline alternative for pre_commit"""
+"""Baseline CLI with pre-commit integration."""
 
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Optional
 
 import click
 from typing_extensions import Literal
@@ -53,7 +53,7 @@ def baseline_cli(
     linter_output: Literal['stdout', 'stderr'],
     hook_name: Optional[str],
 ) -> None:
-    """linthell baseline command for pre-commit workflow.
+    """Linthell baseline command for pre-commit workflow.
 
     Algorithm is same as regular `linthell baseline`, but it uses pre-commit
     features:

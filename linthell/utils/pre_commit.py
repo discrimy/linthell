@@ -1,3 +1,5 @@
+"""Pre-commit integration utilities."""
+
 from typing import Tuple
 
 from pre_commit.clientlib import load_config

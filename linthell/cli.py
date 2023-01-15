@@ -1,3 +1,5 @@
+"""Main CLI module."""
+
 from configparser import ConfigParser
 from contextlib import suppress
 from typing import Optional

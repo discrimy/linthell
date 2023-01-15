@@ -1,3 +1,5 @@
+"""Utilities for linters handling."""
+
 import shlex
 import subprocess
 from typing import Tuple
@@ -9,7 +11,7 @@ def run_linter_and_get_output(
     files: Tuple[str, ...],
     linter_output: Literal['stdout', 'stderr'],
 ) -> str:
-    """Executes provided linter command and passes files as last arguments and returns its output."""
+    """Execute linter command against files and return its output."""
     linter_process = subprocess.run(
         [*shlex.split(linter_command), *files],
         text=True,

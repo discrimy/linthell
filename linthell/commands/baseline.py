@@ -1,20 +1,21 @@
+"""CLI that generates baseline file."""
+
 import sys
 from pathlib import Path
 from typing import List
 
 import click
 
-from linthell.defaults import FLAKE8_REGEX
 from linthell.utils.id_lines import get_id_lines
 
 
 def baseline(linter_output: str, lint_format: str) -> List[str]:
-    """Generate id lines based on linter output"""
+    """Generate id lines based on linter output."""
     return get_id_lines(linter_output, lint_format)
 
 
 def save_baseline(baseline_file: Path, id_lines: List[str]) -> None:
-    """Save id lines into baseline file"""
+    """Save id lines into baseline file."""
     baseline_file.write_text('\n'.join(sorted(id_lines)))
 
 

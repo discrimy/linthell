@@ -1,3 +1,5 @@
+"""Utilities for config files."""
+
 from configparser import ConfigParser
 from typing import Dict, Any
 
@@ -5,7 +7,10 @@ from click import Group, Command
 
 
 def config_to_dict(config_parser: ConfigParser) -> Dict[str, Dict[str, str]]:
-    """Convert parser ConfigParser to dict {<section>: {<key>: <string value>}}"""
+    """Convert parser ConfigParser to dict.
+
+    Output format: {<section>: {<key>: <string value>}}
+    """
     return {
         section: dict(**config_parser[section])
         for section in config_parser.sections()
@@ -32,7 +37,7 @@ ConfigMap = Dict[str, 'ConfigMap']
 def create_default_map(
     common: Dict[str, str], commands: Dict[str, Command]
 ) -> ConfigMap:
-    """Creates a config dict with default values"""
+    """Create a config dict with default values."""
     return {
         command_name: create_default_map(common, command.commands)
         if isinstance(command, Group)
@@ -45,7 +50,9 @@ def create_config_dict(
     config_parser: ConfigParser,
     commands: Dict[str, Command],
 ):
-    """Created config to be used as click.Context.default_map values. Supports nested groups.
+    """Create config to be used as click.Context.default_map values.
+
+    Supports nested groups.
 
     Top element 'common' will be used as default for all commands.
     """
