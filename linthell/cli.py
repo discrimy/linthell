@@ -1,11 +1,11 @@
 from configparser import ConfigParser
+from contextlib import suppress
 from typing import Optional
 
 import click
 
 from linthell.commands.lint import lint_cli
 from linthell.commands.baseline import baseline_cli
-from linthell.commands.pre_commit.cli import pre_commit_cli
 from linthell.utils.config import (
     config_to_dict,
     create_config_dict,
@@ -53,4 +53,6 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
 
 cli.add_command(lint_cli, 'lint')
 cli.add_command(baseline_cli, 'baseline')
-cli.add_command(pre_commit_cli, 'pre-commit')
+with suppress(ImportError):
+    from linthell.commands.pre_commit.cli import pre_commit_cli
+    cli.add_command(pre_commit_cli, 'pre-commit')
