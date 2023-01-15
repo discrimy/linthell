@@ -1,6 +1,5 @@
 """linthell baseline alternative for pre_commit"""
 
-import subprocess
 from pathlib import Path
 from typing import Tuple, Optional
 
@@ -37,33 +36,35 @@ from linthell.utils.pre_commit import get_all_files_by_hook
 @click.option(
     '--linter-output',
     type=click.Choice(('stdout', 'stderr')),
-    help='Linter output',
+    help='Where linter outputs his errors',
     default='stdout',
+    show_default=True,
 )
 @click.option(
     '--hook-name',
     type=click.STRING,
-    help='Update baseline based on all files from pre_commit hook',
-    required=False,
+    help='Update baseline based on all files from pre-commit hook',
+    required=True,
 )
-@click.argument('files', nargs=-1, type=click.Path())
 def baseline_cli(
     baseline_file: str,
     lint_format: str,
     linter_command: str,
     linter_output: Literal['stdout', 'stderr'],
     hook_name: Optional[str],
-    files: Tuple[str, ...],
 ) -> None:
-    """"""
-    # files and hook_name are exclusive
-    if files and hook_name:
-        print('files arguments and --hook-name are exclusive')
-        exit(1)
+    """linthell baseline command for pre-commit workflow.
 
-    if not files and hook_name:
-        files = get_all_files_by_hook('.pre-commit-config.yaml', hook_name)
+    Algorithm is same as regular `linthell baseline`, but it uses pre-commit
+    features:
+    - List of files is extracted from pre-commit config based on hook name.
+    - Executes linter command embedded, so you can set it inside linthell
+    config file.
 
+    Usage:
+    $ linthell pre-commit baseline --hook-name <linthell hook name>
+    """
+    files = get_all_files_by_hook('.pre-commit-config.yaml', hook_name)
     output = run_linter_and_get_output(linter_command, files, linter_output)
 
     id_lines = baseline(output, lint_format)

@@ -1,7 +1,5 @@
 """linthell lint alternative for pre_commit"""
 
-import shlex
-import subprocess
 import sys
 from pathlib import Path
 from typing import Tuple
@@ -38,8 +36,9 @@ from linthell.utils.linters import run_linter_and_get_output
 @click.option(
     '--linter-output',
     type=click.Choice(('stdout', 'stderr')),
-    help='Linter output',
+    help='Where linter outputs his errors',
     default='stdout',
+show_default=True,
 )
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_cli(
@@ -49,7 +48,7 @@ def lint_cli(
     linter_output: Literal['stdout', 'stderr'],
     files: Tuple[str, ...],
 ) -> None:
-    """Linthell with embedded linter executing.
+    """linthell lint command for pre-commit workflow.
 
     The purpose of this command is to be the thin wrapper around
     `linthell lint` command, but linter is called inside command. Such behavior
@@ -73,6 +72,9 @@ def lint_cli(
     hooks outside venv, so you should adapt hook config to run the command
     inside it. For example, pylint with poetry as venv manager can be launched
     via `entrypoint: poetry run pylint ...`.
+
+    Usage:
+    Create a pre-commit hook with entry like: `linthell pre-commit lint`.
     """
     output = run_linter_and_get_output(linter_command, files, linter_output)
 

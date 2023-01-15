@@ -8,6 +8,12 @@ from pre_commit.store import Store
 
 
 def get_all_files_by_hook(config_file: str, hook_name: str) -> Tuple[str, ...]:
+    """Get all files that hook checks (simular to --all behaviour).
+
+    Based on pre-commit hook internals, so might not work on some version of
+    pre-commit. Report an author about it (with pre-commit and linthell
+    versions).
+    """
     config = load_config(config_file)
     classifier = Classifier.from_config(
         filenames=get_all_files(),

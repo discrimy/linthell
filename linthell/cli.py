@@ -27,7 +27,7 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
 
     The main concept of this tool is baseline file. It contains all errors
     that should be ignored and be fixed later. After baseline is generated,
-    all errors inside this file are ignored but new ones not. So you can adapt
+    all errors inside this file are ignored but new ones not, so you can adapt
     new linter smoothly without fixing old code. To generate and use baseline,
     you should provide the path to this file, linter output and regex to parse
     it. Regex must contain three named groups `path`, `line` and `message`
@@ -37,6 +37,10 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     Workflow looks like this: at first, create baseline for each linter
     you use. Then replace calls your linter with piping their results
     to `linthell lint` command.
+
+    Example:
+    $ <your linter> | linthell baseline -b baseline.ini -f <regex to parse>
+    $ <your linter> | linthell lint -b baseline.ini -f <regex to parse>
     """
     if config_path:
         config_parser = ConfigParser()

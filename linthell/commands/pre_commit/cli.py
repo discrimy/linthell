@@ -6,6 +6,7 @@ from linthell.commands.pre_commit.lint import lint_cli
 
 @click.group()
 def pre_commit_cli():
+    """Commands for pre-commit integration."""
     pass
 
 

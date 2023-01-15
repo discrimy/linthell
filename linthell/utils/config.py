@@ -5,6 +5,7 @@ from click import Group, Command
 
 
 def config_to_dict(config_parser: ConfigParser) -> Dict[str, Dict[str, str]]:
+    """Convert parser ConfigParser to dict {<section>: {<key>: <string value>}}"""
     return {
         section: dict(**config_parser[section])
         for section in config_parser.sections()
@@ -12,6 +13,12 @@ def config_to_dict(config_parser: ConfigParser) -> Dict[str, Dict[str, str]]:
 
 
 def get_by_dotted_path(d: Dict[str, Any], path: str) -> Any:
+    """Get a nested dict element by dotted path.
+
+    Example:
+    d = {'a': {'b': {'c': 42}}}
+    get_by_dotted_path(d, 'a.b.c')  # 42
+    """
     keys = path.split('.')
     rv = d
     for key in keys:
@@ -25,6 +32,7 @@ ConfigMap = Dict[str, 'ConfigMap']
 def create_default_map(
     common: Dict[str, str], commands: Dict[str, Command]
 ) -> ConfigMap:
+    """Creates a config dict with default values"""
     return {
         command_name: create_default_map(common, command.commands)
         if isinstance(command, Group)
@@ -37,6 +45,10 @@ def create_config_dict(
     config_parser: ConfigParser,
     commands: Dict[str, Command],
 ):
+    """Created config to be used as click.Context.default_map values. Supports nested groups.
+
+    Top element 'common' will be used as default for all commands.
+    """
     sections = config_to_dict(config_parser)
     common = sections.pop('common', {})
     config = create_default_map(common, commands)
