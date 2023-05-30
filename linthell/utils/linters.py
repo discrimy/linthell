@@ -17,7 +17,6 @@ def run_linter_and_get_output(
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        shell=True,
         check=False,
     )
     if linter_output == 'stdout':
