@@ -1,22 +1,20 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 22.12.0
+  - repo: local
     hooks:
       - id: black
-        # It is recommended to specify the latest version of Python
-        # supported by your project here, or alternatively use
-        # pre-commit's default_language_version, see
-        # https://pre-commit.com/#top_level-default_language_version
-        language_version: python3.10
+        name: black
+        language: system
+        entry: black
+        types:  [python]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-    - id: flake8
+      - id: flake8
+        name: flake8
+        language: system
+        entry: flake8
+        types: [python]
 
-  - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.2.3
-    hooks:
-      - id: pydocstyle
-        args: ['--convention=pep257']
-        pass_filenames: true
+      - id: pydoctyle
+        name: pydocstyle
+        language: system
+        entry: pydocstyle --convention=pep257
+        types: [python]
