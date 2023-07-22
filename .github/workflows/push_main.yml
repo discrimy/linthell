@@ -1,0 +1,17 @@
+name: Push main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the Docker image
+        run: docker build . --tag linthell
+      - run: |
+          docker run -v $(pwd):/app linthell \
+          ./Taskfile.sh ci:on_push_main
