@@ -1,11 +1,19 @@
 #!/bin/bash
 
 function init {
-    pre-commit install
+    poetry run pre-commit install
 }
 
 function lint {
-  pre-commit run --all
+    poetry run pre-commit run --all
+}
+
+function ci:on_pull_request() {
+    whoami
+    git config --global --add safe.directory /app
+    poetry --version
+    git status
+    lint
 }
 
 function help {
