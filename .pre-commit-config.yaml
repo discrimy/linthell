@@ -4,17 +4,17 @@ repos:
       - id: black
         name: black
         language: system
-        entry: black
+        entry: poetry run black --check --diff
         types:  [python]
 
       - id: flake8
         name: flake8
         language: system
-        entry: flake8
+        entry: poetry run flake8
         types: [python]
 
       - id: pydoctyle
         name: pydocstyle
         language: system
-        entry: pydocstyle --convention=pep257
+        entry: poetry run pydocstyle --convention=pep257
         types: [python]

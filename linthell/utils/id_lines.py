@@ -15,7 +15,8 @@ def get_id_line(path: str, line: str, message: str) -> str:
             try:
                 code = lines[int(line) - 1]
             except IndexError:
-                code = lines[-1]  # https://github.com/discrimy/linthell/issues/2
+                # https://github.com/discrimy/linthell/issues/2
+                code = lines[-1]
     normalized_path = Path(path).as_posix()
     return f'{normalized_path}:{code}:{message}'
 
