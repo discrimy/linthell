@@ -9,12 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build the Docker image
-        run: docker build . --tag linthell
+      - run: docker build . --tag linthell
       - run: |
           docker run \
           -v $(pwd):/app \
           -e PYPI_TOKEN=$PYPI_TOKEN \
-          linthell ./Taskfile.sh ci:on_tag_main
+          linthell bash Taskfile.sh ci:on_tag_main
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
