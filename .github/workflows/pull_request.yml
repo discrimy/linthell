@@ -3,7 +3,7 @@ name: Pull request
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -13,5 +13,8 @@ jobs:
       - name: Build the Docker image
         run: docker build . --tag linthell
       - run: |
-          docker run -v $(pwd):/app linthell \
-          ./Taskfile.sh ci:on_pull_request
+          whoami
+          ls -l
+          docker run -v $(pwd):/app linthell ls -l 
+          docker run -v $(pwd):/app linthell whoami 
+          docker run -v $(pwd):/app linthell ./Taskfile.sh ci:on_pull_request

@@ -1,4 +1,4 @@
-name: Tag main
+name: Tag master
 
 on:
   release:
