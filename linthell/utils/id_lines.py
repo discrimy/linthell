@@ -1,6 +1,7 @@
 """Utilities for ID Lines and digests conversions."""
 
 import hashlib
+import linecache
 import re
 from pathlib import Path
 from typing import List
@@ -10,13 +11,8 @@ def get_id_line(path: str, line: str, message: str) -> str:
     """Convert path, line and message to id line (path:code_line:message)."""
     code = ''
     if line:
-        lines = Path(path).read_text().splitlines()
-        if lines:
-            try:
-                code = lines[int(line) - 1]
-            except IndexError:
-                # https://github.com/discrimy/linthell/issues/2
-                code = lines[-1]
+        line = int(line)
+        code = linecache.getline(path, line).rstrip('\n')
     normalized_path = Path(path).as_posix()
     return f'{normalized_path}:{code}:{message}'
 
