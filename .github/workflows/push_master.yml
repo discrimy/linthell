@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: docker build . --tag linthell
+      - run: docker build . --tag linthell --target ci
       - run: docker run -v $(pwd):/app linthell bash Taskfile.sh ci:on_push_main

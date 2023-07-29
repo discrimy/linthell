@@ -1,0 +1,28 @@
+{
+	"build": {
+		"dockerfile": "./Dockerfile",
+		"context": ".",
+		"target": "dev"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"donjayamanne.python-extension-pack",
+				"christian-kohler.path-intellisense",
+				"zeshuaro.vscode-python-poetry",
+				"ms-azuretools.vscode-docker",
+				"eamodio.gitlens"
+			]
+		}
+	},
+	"onCreateCommand": "cp -R /tmp/.ssh /root && chmod -R 600 /root/.ssh",
+	"updateContentCommand": [
+		"./Taskfile.sh",
+		"init"
+	],
+	"workspaceFolder": "/app/",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/app/,type=bind",
+	"mounts": [
+		"source=${localEnv:USER}${localEnv:USERPROFILE}/.ssh,target=/tmp/.ssh,type=bind,readonly"
+	]
+}
