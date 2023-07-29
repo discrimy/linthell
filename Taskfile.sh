@@ -5,6 +5,7 @@ set +e
 function init {
     echo "Init"
     poetry run pre-commit install
+    poetry install --sync
 }
 
 function lint {
