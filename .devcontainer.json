@@ -1,8 +1,12 @@
 {
+	"name": "linthell",
 	"build": {
 		"dockerfile": "./Dockerfile",
 		"context": ".",
 		"target": "dev"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 	},
 	"customizations": {
 		"vscode": {
@@ -12,7 +16,10 @@
 				"zeshuaro.vscode-python-poetry",
 				"ms-azuretools.vscode-docker",
 				"eamodio.gitlens"
-			]
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "/opt/venv/bin/python"
+			}
 		}
 	},
 	"onCreateCommand": "cp -R /tmp/.ssh /root && chmod -R 600 /root/.ssh",
@@ -23,6 +30,10 @@
 	"workspaceFolder": "/app/",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/app/,type=bind",
 	"mounts": [
-		"source=${localEnv:USER}${localEnv:USERPROFILE}/.ssh,target=/tmp/.ssh,type=bind,readonly"
+		"source=${localEnv:USER}${localEnv:USERPROFILE}/.ssh,target=/tmp/.ssh,type=bind,readonly",
+		// Exclude .git/hooks forders as hooks as machine-zspecific 
+		// (for example host's pre-commit hook and container's can be different as 
+		// they refer to different locations inside either host or container)
+		"target=/app/.git/hooks"
 	]
 }
