@@ -23,10 +23,7 @@
 		}
 	},
 	"onCreateCommand": "cp -R /tmp/.ssh /root && chmod -R 600 /root/.ssh",
-	"updateContentCommand": [
-		"./Taskfile.sh",
-		"init"
-	],
+	"updateContentCommand": "bash Taskfile.sh init",
 	"workspaceFolder": "/app/",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/app/,type=bind",
 	"mounts": [
