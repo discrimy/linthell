@@ -1,8 +1,8 @@
 {
 	"name": "linthell",
 	"build": {
-		"dockerfile": "./Dockerfile",
-		"context": ".",
+		"dockerfile": "../Dockerfile",
+		"context": "..",
 		"target": "dev"
 	},
 	"features": {

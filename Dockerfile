@@ -20,4 +20,11 @@ RUN poetry install
 FROM base as dev
 # Example how to share same runtime base image, but use different tools in different cases
 # (do not mix dev and runtime deps there)
-RUN apt-get update && apt-get install wget -y && poetry install 
+RUN apt-get update && apt-get install wget jq -y
+# Preinstall vscode extensions
+COPY .devcontainer/ /app/.devcontainer/
+ARG VSCODE_VERSION=2ccd690cbff1569e4a83d7c43d45101f817401dc
+RUN bash .devcontainer/preinstall-vscode-extensions.sh $VSCODE_VERSION /app/.devcontainer/devcontainer.json
+
+# Install dev deps
+RUN poetry install
