@@ -4,8 +4,8 @@ version = "1.0.4"
 description = "Universal flakehell replacement for almost any linter you like"
 authors = ["Alexander Bespalov <discrimy.off@gmail.com>"]
 readme = "README.md"
-homepage = "https://gitea.discrimy.ru/discrimy/linthell"
-repository = "https://gitea.discrimy.ru/discrimy/linthell"
+homepage = "https://github.com/discrimy/linthell"
+repository = "https://github.com/discrimy/linthell"
 
 [tool.poetry.scripts]
 linthell = "linthell:cli"
