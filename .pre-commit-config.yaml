@@ -16,5 +16,5 @@ repos:
       - id: pydoctyle
         name: pydocstyle
         language: system
-        entry: poetry run pydocstyle --convention=pep257
+        entry: poetry run pydocstyle
         types: [python]
