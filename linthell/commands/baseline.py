@@ -55,7 +55,9 @@ def baseline_cli(
         plugin = load_plugin_by_name(plugin_name)
     else:
         if not lint_format:
-            raise ValueError('lint_format must be present if there is no plugin_name')
+            raise ValueError(
+                'lint_format must be present if there is no plugin_name'
+            )
         plugin = LinthellRegexPlugin(lint_format)
 
     linter_output = sys.stdin.read()

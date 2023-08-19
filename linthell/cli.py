@@ -48,9 +48,7 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     if config_path:
         config_parser = ConfigParser()
         config_parser.read(config_path)
-        ctx.default_map = create_config_dict(
-            config_parser, command.commands
-        )
+        ctx.default_map = create_config_dict(config_parser, command.commands)
 
 
 cli.add_command(lint_cli, 'lint')

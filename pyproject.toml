@@ -37,7 +37,7 @@ skip-string-normalization = true
 line-length = 79
 
 [tool.pydocstyle]
-ignore = ["D100", "D104", "D213"]
+ignore = ["D100", "D104", "D213", "D203", "D407", "D413"]
 
 [tool.poetry.plugins."linthell.plugins"]
 black-check = "linthell.plugins.black_check:LinthellBlackCheckPlugin"

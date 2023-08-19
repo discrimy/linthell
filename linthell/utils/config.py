@@ -39,7 +39,7 @@ def create_default_map(
 ) -> ConfigMap:
     """Create a config dict with default values."""
     return {
-        command_name: create_default_map(common, command.commands)
+        command_name: create_default_map(common, command.commands)  # type: ignore # noqa: E501
         if isinstance(command, Group)
         else common
         for command_name, command in commands.items()

@@ -40,7 +40,9 @@ from linthell.utils.lint import lint
     cls=Mutex,
     not_required_if=['lint_format'],
 )
-def lint_cli(baseline_file: str, lint_format: Optional[str], plugin_name: Optional[str]) -> None:
+def lint_cli(
+    baseline_file: str, lint_format: Optional[str], plugin_name: Optional[str]
+) -> None:
     """Filter your linter output against baseline file.
 
     It scans the linter output against baseline file and filters it. If all
@@ -57,9 +59,11 @@ def lint_cli(baseline_file: str, lint_format: Optional[str], plugin_name: Option
         plugin = load_plugin_by_name(plugin_name)
     else:
         if not lint_format:
-            raise ValueError('lint_format must be present if there is no plugin_name')
+            raise ValueError(
+                'lint_format must be present if there is no plugin_name'
+            )
         plugin = LinthellRegexPlugin(lint_format)
-    
+
     linter_output = sys.stdin.read()
     digests = get_digests_from_baseline(Path(baseline_file))
     report = lint(digests, linter_output, plugin)

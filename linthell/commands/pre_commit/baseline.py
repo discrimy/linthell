@@ -63,7 +63,7 @@ from linthell.utils.pre_commit import get_all_files_by_hook
 )
 def baseline_cli(
     baseline_file: str,
-        lint_format: Optional[str],
+    lint_format: Optional[str],
     plugin_name: Optional[str],
     linter_command: str,
     linter_output: Literal['stdout', 'stderr'],
@@ -84,9 +84,11 @@ def baseline_cli(
         plugin = load_plugin_by_name(plugin_name)
     else:
         if not lint_format:
-            raise ValueError('lint_format must be present if there is no plugin_name')
+            raise ValueError(
+                'lint_format must be present if there is no plugin_name'
+            )
         plugin = LinthellRegexPlugin(lint_format)
-    
+
     files = get_all_files_by_hook('.pre-commit-config.yaml', hook_name)
     output = run_linter_and_get_output(linter_command, files, linter_output)
 

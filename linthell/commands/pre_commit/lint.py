@@ -58,7 +58,7 @@ from linthell.utils.linters import run_linter_and_get_output
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_cli(
     baseline_file: str,
-            lint_format: Optional[str],
+    lint_format: Optional[str],
     plugin_name: Optional[str],
     linter_command: str,
     linter_output: Literal['stdout', 'stderr'],
@@ -96,9 +96,11 @@ def lint_cli(
         plugin = load_plugin_by_name(plugin_name)
     else:
         if not lint_format:
-            raise ValueError('lint_format must be present if there is no plugin_name')
+            raise ValueError(
+                'lint_format must be present if there is no plugin_name'
+            )
         plugin = LinthellRegexPlugin(lint_format)
-    
+
     output = run_linter_and_get_output(linter_command, files, linter_output)
 
     digests = get_digests_from_baseline(Path(baseline_file))
