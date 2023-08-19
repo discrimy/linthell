@@ -24,6 +24,7 @@ from linthell.utils.pre_commit import get_all_files_by_hook
     required=True,
 )
 @click.option(
+    '--lint-format',
     '--format',
     '-f',
     'lint_format',
@@ -33,7 +34,7 @@ from linthell.utils.pre_commit import get_all_files_by_hook
     not_required_if=['plugin_name'],
 )
 @click.option(
-    '--plugin',
+    '--plugin-name',
     '-p',
     'plugin_name',
     help='Plugin to use.',
@@ -80,14 +81,12 @@ def baseline_cli(
     Usage:
     $ linthell pre-commit baseline --hook-name <linthell hook name>
     """
-    if plugin_name is not None:
+    if plugin_name:
         plugin = load_plugin_by_name(plugin_name)
-    else:
-        if not lint_format:
-            raise ValueError(
-                'lint_format must be present if there is no plugin_name'
-            )
+    elif lint_format:
         plugin = LinthellRegexPlugin(lint_format)
+    else:
+        raise click.BadOptionUsage('lint_format | plugin_name', 'Provide either lint_format or plugin_name')
 
     files = get_all_files_by_hook('.pre-commit-config.yaml', hook_name)
     output = run_linter_and_get_output(linter_command, files, linter_output)

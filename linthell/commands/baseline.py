@@ -21,6 +21,7 @@ from linthell.utils.click import Mutex
     required=True,
 )
 @click.option(
+    '--lint-format',
     '--format',
     '-f',
     'lint_format',
@@ -30,7 +31,7 @@ from linthell.utils.click import Mutex
     not_required_if=['plugin_name'],
 )
 @click.option(
-    '--plugin',
+    '--plugin-name',
     '-p',
     'plugin_name',
     help='Plugin to use.',
@@ -51,14 +52,12 @@ def baseline_cli(
     Usage:
     $ <linter command> | linthell baseline
     """
-    if plugin_name is not None:
+    if plugin_name:
         plugin = load_plugin_by_name(plugin_name)
-    else:
-        if not lint_format:
-            raise ValueError(
-                'lint_format must be present if there is no plugin_name'
-            )
+    elif lint_format:
         plugin = LinthellRegexPlugin(lint_format)
+    else:
+        raise click.BadOptionUsage('lint_format | plugin_name', 'Provide either lint_format or plugin_name')
 
     linter_output = sys.stdin.read()
     id_lines = generate_baseline(linter_output, plugin)
