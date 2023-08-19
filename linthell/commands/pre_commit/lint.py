@@ -98,7 +98,10 @@ def lint_cli(
     elif lint_format:
         plugin = LinthellRegexPlugin(lint_format)
     else:
-        raise click.BadOptionUsage('lint_format | plugin_name', 'Provide either lint_format or plugin_name')
+        raise click.BadOptionUsage(
+            'lint_format | plugin_name',
+            'Provide either lint_format or plugin_name',
+        )
 
     output = run_linter_and_get_output(linter_command, files, linter_output)
 

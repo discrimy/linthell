@@ -57,7 +57,10 @@ def baseline_cli(
     elif lint_format:
         plugin = LinthellRegexPlugin(lint_format)
     else:
-        raise click.BadOptionUsage('lint_format | plugin_name', 'Provide either lint_format or plugin_name')
+        raise click.BadOptionUsage(
+            'lint_format | plugin_name',
+            'Provide either lint_format or plugin_name',
+        )
 
     linter_output = sys.stdin.read()
     id_lines = generate_baseline(linter_output, plugin)

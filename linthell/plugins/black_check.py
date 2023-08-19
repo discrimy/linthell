@@ -8,7 +8,7 @@ class LinthellBlackCheckPlugin(LinthellPlugin):
     """Linthell plugin for black with --check option (show files only)."""
 
     def parse(self, linter_output: str) -> List[LinterError]:  # noqa D102
-        
+
         errors = []
         for match in re.finditer(r'would reformat (.+)', linter_output):
             id_line = match.group(1)

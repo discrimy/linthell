@@ -61,7 +61,10 @@ def lint_cli(
     elif lint_format:
         plugin = LinthellRegexPlugin(lint_format)
     else:
-        raise click.BadOptionUsage('lint_format | plugin_name', 'Provide either lint_format or plugin_name')
+        raise click.BadOptionUsage(
+            'lint_format | plugin_name',
+            'Provide either lint_format or plugin_name',
+        )
 
     linter_output = sys.stdin.read()
     digests = get_digests_from_baseline(Path(baseline_file))
