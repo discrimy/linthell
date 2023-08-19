@@ -1,7 +1,7 @@
 """Utilities for config files."""
 
 from configparser import ConfigParser
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 from click import Group, Command
 
@@ -31,7 +31,7 @@ def get_by_dotted_path(d: Dict[str, Any], path: str) -> Any:
     return rv
 
 
-ConfigMap = Dict[str, 'ConfigMap']
+ConfigMap = Dict[str, Union['ConfigMap', str]]
 
 
 def create_default_map(
@@ -41,7 +41,7 @@ def create_default_map(
     return {
         command_name: create_default_map(common, command.commands)
         if isinstance(command, Group)
-        else {**common}
+        else common
         for command_name, command in commands.items()
     }
 

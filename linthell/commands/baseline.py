@@ -2,21 +2,13 @@
 
 import sys
 from pathlib import Path
-from typing import List
+from typing import Optional
 
 import click
-
-from linthell.utils.id_lines import get_id_lines
-
-
-def baseline(linter_output: str, lint_format: str) -> List[str]:
-    """Generate id lines based on linter output."""
-    return get_id_lines(linter_output, lint_format)
-
-
-def save_baseline(baseline_file: Path, id_lines: List[str]) -> None:
-    """Save id lines into baseline file."""
-    baseline_file.write_text('\n'.join(sorted(id_lines)))
+from linthell.plugins.base import get_available_plugins, load_plugin_by_name
+from linthell.plugins.regex import LinthellRegexPlugin
+from linthell.utils.baseline import generate_baseline, save_baseline
+from linthell.utils.click import Mutex
 
 
 @click.command()
@@ -33,9 +25,25 @@ def save_baseline(baseline_file: Path, id_lines: List[str]) -> None:
     '-f',
     'lint_format',
     help='Regex to parse your linter output.',
-    required=True,
+    default=None,
+    cls=Mutex,
+    not_required_if=['plugin_name'],
 )
-def baseline_cli(baseline_file: str, lint_format: str) -> None:
+@click.option(
+    '--plugin',
+    '-p',
+    'plugin_name',
+    help='Plugin to use.',
+    type=click.Choice(sorted(get_available_plugins().names)),
+    default=None,
+    cls=Mutex,
+    not_required_if=['lint_format'],
+)
+def baseline_cli(
+    baseline_file: str,
+    lint_format: Optional[str],
+    plugin_name: Optional[str],
+) -> None:
     """Create baseline file from your linter output.
 
     Linter output is provided via stdin.
@@ -43,6 +51,13 @@ def baseline_cli(baseline_file: str, lint_format: str) -> None:
     Usage:
     $ <linter command> | linthell baseline
     """
+    if plugin_name is not None:
+        plugin = load_plugin_by_name(plugin_name)
+    else:
+        if not lint_format:
+            raise ValueError('lint_format must be present if there is no plugin_name')
+        plugin = LinthellRegexPlugin(lint_format)
+
     linter_output = sys.stdin.read()
-    id_lines = baseline(linter_output, lint_format)
+    id_lines = generate_baseline(linter_output, plugin)
     save_baseline(Path(baseline_file), id_lines)
