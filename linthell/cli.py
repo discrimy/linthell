@@ -2,7 +2,7 @@
 
 from configparser import ConfigParser
 from contextlib import suppress
-from typing import Optional
+from typing import Optional, cast
 
 import click
 
@@ -44,12 +44,11 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
     $ <your linter> | linthell baseline -b baseline.ini -f <regex to parse>
     $ <your linter> | linthell lint -b baseline.ini -f <regex to parse>
     """
+    command = cast(click.Group, ctx.command)
     if config_path:
         config_parser = ConfigParser()
         config_parser.read(config_path)
-        ctx.default_map = create_config_dict(
-            config_parser, ctx.command.commands
-        )
+        ctx.default_map = create_config_dict(config_parser, command.commands)
 
 
 cli.add_command(lint_cli, 'lint')

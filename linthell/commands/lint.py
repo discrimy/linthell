@@ -1,47 +1,15 @@
 """CLI that lints linter output based on baseline file."""
 
-import re
 import sys
-from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Set
+from typing import Optional
 
 import click
-
-from linthell.utils.id_lines import id_line_to_digest, get_id_line
-
-
-@dataclass
-class LintReport:
-    """Report from linting."""
-
-    errors: List[str]
-
-
-def lint(
-    digests: Set[str], linter_output: str, lint_format: str
-) -> LintReport:
-    """Lint linter output based on known errors' digests."""
-    errors = []
-
-    for match in re.finditer(lint_format, linter_output):
-        path = match.groupdict()['path']
-        line = match.groupdict()['line']
-        message = match.groupdict()['message']
-        lint_message = match.group(0)
-        id_line = get_id_line(path, line, message)
-        digest = id_line_to_digest(id_line)
-        if digest not in digests:
-            errors.append(lint_message)
-
-    return LintReport(errors)
-
-
-def get_digests_from_baseline(baseline_file: Path) -> Set[str]:
-    """Get digests from provided baseline file."""
-    id_lines = Path(baseline_file).read_text().splitlines()
-    digests = {id_line_to_digest(id_line) for id_line in id_lines}
-    return digests
+from linthell.plugins.base import get_available_plugins, load_plugin_by_name
+from linthell.plugins.regex import LinthellRegexPlugin
+from linthell.utils.baseline import get_digests_from_baseline
+from linthell.utils.click import Mutex
+from linthell.utils.lint import lint
 
 
 @click.command()
@@ -54,13 +22,28 @@ def get_digests_from_baseline(baseline_file: Path) -> Set[str]:
     required=True,
 )
 @click.option(
+    '--lint-format',
     '--format',
     '-f',
     'lint_format',
     help='Regex to parse your linter output.',
-    required=True,
+    default=None,
+    cls=Mutex,
+    not_required_if=['plugin_name'],
 )
-def lint_cli(baseline_file: str, lint_format: str) -> None:
+@click.option(
+    '--plugin-name',
+    '-p',
+    'plugin_name',
+    help='Plugin to use.',
+    type=click.Choice(sorted(get_available_plugins().names)),
+    default=None,
+    cls=Mutex,
+    not_required_if=['lint_format'],
+)
+def lint_cli(
+    baseline_file: str, lint_format: Optional[str], plugin_name: Optional[str]
+) -> None:
     """Filter your linter output against baseline file.
 
     It scans the linter output against baseline file and filters it. If all
@@ -73,9 +56,19 @@ def lint_cli(baseline_file: str, lint_format: str) -> None:
     Usage:
     $ <linter command> | linthell lint
     """
+    if plugin_name:
+        plugin = load_plugin_by_name(plugin_name)
+    elif lint_format:
+        plugin = LinthellRegexPlugin(lint_format)
+    else:
+        raise click.BadOptionUsage(
+            'lint_format | plugin_name',
+            'Provide either lint_format or plugin_name',
+        )
+
     linter_output = sys.stdin.read()
     digests = get_digests_from_baseline(Path(baseline_file))
-    report = lint(digests, linter_output, lint_format)
+    report = lint(digests, linter_output, plugin)
 
     if report.errors:
         for error_message in report.errors:

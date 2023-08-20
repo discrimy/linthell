@@ -2,11 +2,11 @@
 
 from typing import Tuple
 
-from pre_commit.clientlib import load_config
-from pre_commit.commands.run import Classifier
-from pre_commit.git import get_all_files
-from pre_commit.repository import all_hooks
-from pre_commit.store import Store
+from pre_commit.clientlib import load_config  # type: ignore
+from pre_commit.commands.run import Classifier  # type: ignore
+from pre_commit.git import get_all_files  # type: ignore
+from pre_commit.repository import all_hooks  # type: ignore
+from pre_commit.store import Store  # type: ignore
 
 
 def get_all_files_by_hook(config_file: str, hook_name: str) -> Tuple[str, ...]:

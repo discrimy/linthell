@@ -2,12 +2,15 @@
 
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 from typing_extensions import Literal
 
 from linthell.commands.lint import lint, get_digests_from_baseline
+from linthell.plugins.base import get_available_plugins, load_plugin_by_name
+from linthell.plugins.regex import LinthellRegexPlugin
+from linthell.utils.click import Mutex
 from linthell.utils.linters import run_linter_and_get_output
 
 
@@ -21,11 +24,24 @@ from linthell.utils.linters import run_linter_and_get_output
     required=True,
 )
 @click.option(
+    '--lint-format',
     '--format',
     '-f',
     'lint_format',
     help='Regex to parse your linter output.',
-    required=True,
+    default=None,
+    cls=Mutex,
+    not_required_if=['plugin_name'],
+)
+@click.option(
+    '--plugin-name',
+    '-p',
+    'plugin_name',
+    help='Plugin to use.',
+    type=click.Choice(sorted(get_available_plugins().names)),
+    default=None,
+    cls=Mutex,
+    not_required_if=['lint_format'],
 )
 @click.option(
     '--linter-command',
@@ -43,7 +59,8 @@ from linthell.utils.linters import run_linter_and_get_output
 @click.argument('files', nargs=-1, type=click.Path())
 def lint_cli(
     baseline_file: str,
-    lint_format: str,
+    lint_format: Optional[str],
+    plugin_name: Optional[str],
     linter_command: str,
     linter_output: Literal['stdout', 'stderr'],
     files: Tuple[str, ...],
@@ -76,10 +93,20 @@ def lint_cli(
     Usage:
     Create a pre-commit hook with entry like: `linthell pre-commit lint`.
     """
+    if plugin_name:
+        plugin = load_plugin_by_name(plugin_name)
+    elif lint_format:
+        plugin = LinthellRegexPlugin(lint_format)
+    else:
+        raise click.BadOptionUsage(
+            'lint_format | plugin_name',
+            'Provide either lint_format or plugin_name',
+        )
+
     output = run_linter_and_get_output(linter_command, files, linter_output)
 
     digests = get_digests_from_baseline(Path(baseline_file))
-    report = lint(digests, output, lint_format)
+    report = lint(digests, output, plugin)
     if report.errors:
         for error_message in report.errors:
             print(error_message)
