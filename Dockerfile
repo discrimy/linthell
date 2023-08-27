@@ -2,7 +2,7 @@ FROM python:3.7-slim as base
 
 RUN apt-get update && \
     apt-get install git curl -y && \
-    # Install poetry outside venv so poetry and linthell deps woun't be messed up
+    # Install poetry globally so poetry and linthell deps won't be messed up
     pip install poetry==1.5.1 --no-cache
 
 RUN python -m venv /opt/venv

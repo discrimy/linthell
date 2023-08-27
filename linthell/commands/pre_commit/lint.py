@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 import click
 from typing_extensions import Literal
 
-from linthell.commands.lint import lint, get_digests_from_baseline
+from linthell.commands.lint import get_digests_from_baseline, lint
 from linthell.plugins.base import get_available_plugins, load_plugin_by_name
 from linthell.plugins.regex import LinthellRegexPlugin
 from linthell.utils.click import Mutex

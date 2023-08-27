@@ -1,7 +1,8 @@
 import linecache
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import List
+
 from linthell.plugins.base import LinthellPlugin
 from linthell.utils.types import IdLine, LinterError
 

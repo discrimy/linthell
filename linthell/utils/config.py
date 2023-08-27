@@ -1,9 +1,9 @@
 """Utilities for config files."""
-
+from collections.abc import MutableMapping
 from configparser import ConfigParser
-from typing import Dict, Any, Union
+from typing import Any, Dict, Union
 
-from click import Group, Command
+from click import Command, Group
 
 
 def config_to_dict(config_parser: ConfigParser) -> Dict[str, Dict[str, str]]:
@@ -35,7 +35,7 @@ ConfigMap = Dict[str, Union['ConfigMap', str]]
 
 
 def create_default_map(
-    common: Dict[str, str], commands: Dict[str, Command]
+    common: Dict[str, str], commands: MutableMapping[str, Command]
 ) -> ConfigMap:
     """Create a config dict with default values."""
     return {
@@ -48,7 +48,7 @@ def create_default_map(
 
 def create_config_dict(
     config_parser: ConfigParser,
-    commands: Dict[str, Command],
+    commands: MutableMapping[str, Command],
 ):
     """Create config to be used as click.Context.default_map values.
 

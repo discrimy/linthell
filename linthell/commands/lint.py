@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 import click
+
 from linthell.plugins.base import get_available_plugins, load_plugin_by_name
 from linthell.plugins.regex import LinthellRegexPlugin
 from linthell.utils.baseline import get_digests_from_baseline

@@ -3,11 +3,9 @@ import sys
 from typing import List, cast
 
 if sys.version_info < (3, 10):
-    from importlib_metadata import entry_points
-    from importlib_metadata import EntryPoints
+    from importlib_metadata import EntryPoints, entry_points
 else:
-    from importlib.metadata import entry_points
-    from importlib.metadata import EntryPoints
+    from importlib.metadata import EntryPoints, entry_points
 
 from linthell.utils.types import LinterError
 

@@ -18,3 +18,15 @@ repos:
         language: system
         entry: poetry run pydocstyle
         types: [python]
+
+      - id: mypy
+        name: mypy
+        language: system
+        entry: poetry run mypy
+        types: [python]
+
+      - id: isort
+        name: isort
+        language: system
+        entry: poetry run isort --check-only --diff
+        types: [python]
