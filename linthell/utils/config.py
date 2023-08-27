@@ -1,7 +1,6 @@
 """Utilities for config files."""
-from collections.abc import MutableMapping
 from configparser import ConfigParser
-from typing import Any, Dict, Union
+from typing import Any, Dict, MutableMapping, Union
 
 from click import Command, Group
 
