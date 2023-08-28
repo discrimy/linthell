@@ -168,8 +168,6 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
             elif line.startswith(_KEEP_LINE_SIGN):
                 self._incr_line_num(line=line, file_version=_FileVersion.OLD)
                 self._incr_line_num(line=line, file_version=_FileVersion.NEW)
-            else:
-                raise Exception(line)
 
         return self.errors
 
