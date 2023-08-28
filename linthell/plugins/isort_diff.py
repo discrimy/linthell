@@ -14,8 +14,8 @@ _FILE_PATH_PATTERN = re.compile(r'(?:-{3}|\+{3})\s(?P<file_path>[\w/.-]+).*')
 """Example: --- package/module.py:before   2023-06-11 22:35:28.465518"""
 _LINE_NUMBER_SIGN = '@'
 _LINE_NUMBER_PATTERN = re.compile(
-    r'@@ -(?P<old_file_version_line_number>\d+),\d+'
-    r' \+(?P<new_file_version_line_number>\d+),\d+ @@'
+    r'@@ -(?P<old_file_version_line_number>\d+)(,\d+)?'
+    r' \+(?P<new_file_version_line_number>\d+)(,\d+)? @@'
 )
 """Example: @@ -10,20 +10,20 @@"""
 _REMOVE_LINE_SIGN = '-'
