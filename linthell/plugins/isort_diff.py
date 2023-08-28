@@ -1,3 +1,4 @@
+import os
 import re
 from enum import Enum
 from typing import List, Optional
@@ -130,6 +131,7 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
     """
 
     def __init__(self) -> None:  # noqa: D107
+        self.base_path = os.getcwd()
         self.file_path: Optional[str] = None
         self.old_file_version_line_number: Optional[int] = None
         self.new_file_version_line_number: Optional[int] = None
@@ -169,7 +171,8 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         if not file_path_match:
             raise IsortOutputInvalidFilePathLineError(line=line)
 
-        self.file_path = file_path_match.group('file_path')
+        absolute_file_path = file_path_match.group('file_path')
+        self.file_path = os.path.relpath(absolute_file_path, self.base_path)
 
     def _parse_line_number(self, line: str) -> None:
         """Parse line numbers from isort output that starts with @."""
