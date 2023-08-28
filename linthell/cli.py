@@ -6,8 +6,8 @@ from typing import Optional, cast
 
 import click
 
-from linthell.commands.lint import lint_cli
 from linthell.commands.baseline import baseline_cli
+from linthell.commands.lint import lint_cli
 from linthell.utils.config import create_config_dict
 
 

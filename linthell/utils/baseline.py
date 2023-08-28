@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Set
-from linthell.plugins.base import LinthellPlugin
 
+from linthell.plugins.base import LinthellPlugin
 from linthell.utils.id_lines import id_line_to_digest
 from linthell.utils.types import IdLine
 

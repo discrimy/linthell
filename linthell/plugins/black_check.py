@@ -1,5 +1,6 @@
 import re
 from typing import List
+
 from linthell.plugins.base import LinthellPlugin
 from linthell.utils.types import LinterError
 

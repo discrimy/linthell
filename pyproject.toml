@@ -21,6 +21,7 @@ flake8 = "^4.0.1"
 black = "^22.3.0"
 pydocstyle = "^6.1.1"
 toml = "^0.10.2"
+isort = "5.11.5"
 pre-commit = "^2.21.0"
 mypy = "1.4.1"
 
@@ -35,6 +36,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 skip-string-normalization = true
 line-length = 79
+
+[tool.isort]
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
 
 [tool.pydocstyle]
 ignore = ["D100", "D104", "D213", "D203", "D407", "D413"]
