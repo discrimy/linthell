@@ -43,10 +43,12 @@ multi_line_output = 3
 include_trailing_comma = true
 
 [tool.pydocstyle]
-ignore = ["D100", "D104", "D213", "D203", "D407", "D413"]
+ignore = ["D100", "D104", "D105", "D213", "D203", "D407", "D413"]
 
 [tool.poetry.plugins."linthell.plugins"]
 black-check = "linthell.plugins.black_check:LinthellBlackCheckPlugin"
+black-diff = "linthell.plugins.black_diff:LinthellBlackDiffPlugin"
+isort-diff = "linthell.plugins.isort_diff:LinthellIsortDiffPlugin"
 flake8 = "linthell.plugins.flake8:LinthellFlake8Plugin"
 pydocstyle = "linthell.plugins.pydocstyle:LinthellPydocstylePlugin"
 mypy = "linthell.plugins.mypy:LinthellMypyPlugin"
