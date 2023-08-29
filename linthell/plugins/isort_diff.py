@@ -1,6 +1,7 @@
 import os
 import re
 from enum import Enum
+from pathlib import Path
 from typing import List, Optional
 
 from typing_extensions import assert_never
@@ -46,7 +47,7 @@ class IsortOutputInvalidError(Exception):
     def __init__(self, line: str, msg: Optional[str] = None) -> None:
         """Initialize exception instance.
 
-        :param line: line of black-diff output.
+        :param line: line of isort-diff output.
         :param msg: verbose message of error.
                     If not passed `self.DEFAULT_MSG` is used.
         """
@@ -131,7 +132,7 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
     """
 
     def __init__(self) -> None:  # noqa: D107
-        self.base_path = os.getcwd()
+        self.work_dir_path: str = os.getcwd()
         self.file_path: Optional[str] = None
         self.old_file_version_line_number: Optional[int] = None
         self.new_file_version_line_number: Optional[int] = None
@@ -156,7 +157,6 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
                     if line.startswith(_REMOVE_LINE_SIGN)
                     else _FileVersion.NEW
                 )
-
                 self._append_errors(line=line, file_version=file_version)
                 self._incr_line_num(line=line, file_version=file_version)
             elif line.startswith(_KEEP_LINE_SIGN):
@@ -171,8 +171,7 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         if not file_path_match:
             raise IsortOutputInvalidFilePathLineError(line=line)
 
-        absolute_file_path = file_path_match.group('file_path')
-        self.file_path = os.path.relpath(absolute_file_path, self.base_path)
+        self.file_path = file_path_match.group('file_path')
 
     def _parse_line_number(self, line: str) -> None:
         """Parse line numbers from isort output that starts with @."""
@@ -202,9 +201,13 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         if self.file_path is None or line_number is None:
             raise IsortOutputInvalidLineOrderError(line=line)
 
+        relative_posix_file_path = Path(
+            os.path.relpath(self.file_path, self.work_dir_path)
+        ).as_posix()
+
         self.errors.append(
             LinterError(
-                id_line=f'{self.file_path}:{line}',
+                id_line=f'{relative_posix_file_path}:{line}',
                 error_message=f'{self.file_path}:{line_number}: {line}',
             ),
         )

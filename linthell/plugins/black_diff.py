@@ -1,5 +1,6 @@
 import re
 from enum import Enum
+from pathlib import Path
 from typing import List, Optional
 
 from typing_extensions import assert_never
@@ -162,7 +163,6 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
                     if line.startswith(_REMOVE_LINE_SIGN)
                     else _FileVersion.NEW
                 )
-
                 self._append_errors(line=line, file_version=file_version)
                 self._incr_line_num(line=line, file_version=file_version)
             elif line.startswith(_KEEP_LINE_SIGN):
@@ -209,7 +209,7 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
 
         self.errors.append(
             LinterError(
-                id_line=f'{self.file_path}:{line}',
+                id_line=f'{Path(self.file_path).as_posix()}:{line}',
                 error_message=f'{self.file_path}:{line_number}: {line}',
             ),
         )
