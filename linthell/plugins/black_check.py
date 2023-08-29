@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 from typing import List
 
 from linthell.plugins.base import LinthellPlugin
@@ -12,7 +13,8 @@ class LinthellBlackCheckPlugin(LinthellPlugin):
 
         errors = []
         for match in re.finditer(r'would reformat (.+)', linter_output):
-            id_line = match.group(1)
+            file_path = match.group(1)
             message = match.group(0)
+            id_line = Path(file_path).as_posix()
             errors.append(LinterError(id_line, message))
         return errors
