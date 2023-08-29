@@ -13,6 +13,11 @@ function lint {
     poetry run pre-commit run --all
 }
 
+function autoformat {
+    poetry run black .
+    poetry run isort .
+}
+
 function publish() {
     poetry config repositories.pypi "$1"
     poetry config pypi-token.pypi "$2"
