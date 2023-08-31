@@ -201,13 +201,12 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         if self.file_path is None or line_number is None:
             raise IsortOutputInvalidLineOrderError(line=line)
 
-        relative_posix_file_path = Path(
-            os.path.relpath(self.file_path, self.work_dir_path)
-        ).as_posix()
-
+        normalized_path = (
+            Path(self.file_path).relative_to(Path.cwd()).as_posix()
+        )
         self.errors.append(
             LinterError(
-                id_line=f'{relative_posix_file_path}:{line}',
+                id_line=f'{normalized_path}:{line}',
                 error_message=f'{self.file_path}:{line_number}: {line}',
             ),
         )

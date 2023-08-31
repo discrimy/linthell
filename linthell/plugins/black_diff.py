@@ -207,9 +207,12 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
         if self.file_path is None or line_number is None:
             raise BlackOutputInvalidLineOrderError(line=line)
 
+        normalized_path = (
+            Path(self.file_path).relative_to(Path.cwd()).as_posix()
+        )
         self.errors.append(
             LinterError(
-                id_line=f'{Path(self.file_path).as_posix()}:{line}',
+                id_line=f'{normalized_path}:{line}',
                 error_message=f'{self.file_path}:{line_number}: {line}',
             ),
         )
