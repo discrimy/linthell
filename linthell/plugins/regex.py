@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 
 from linthell.plugins.base import LinthellPlugin
+from linthell.utils.path import normalize_path
 from linthell.utils.types import IdLine, LinterError
 
 
@@ -13,7 +14,7 @@ def get_id_line(path: str, line: str, message: str) -> IdLine:
     if line:
         line_int = int(line)
         code = linecache.getline(path, line_int).rstrip('\n')
-    normalized_path = Path(path).as_posix()
+    normalized_path = normalize_path(Path(path))
     return f'{normalized_path}:{code}:{message}'
 
 

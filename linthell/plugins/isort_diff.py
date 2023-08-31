@@ -7,6 +7,7 @@ from typing import List, Optional
 from typing_extensions import assert_never
 
 from linthell.plugins.base import LinthellPlugin
+from linthell.utils.path import normalize_path
 from linthell.utils.types import LinterError
 
 _OLD_VERSION_FILE_PATH_SIGN = '--- '
@@ -201,9 +202,7 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         if self.file_path is None or line_number is None:
             raise IsortOutputInvalidLineOrderError(line=line)
 
-        normalized_path = (
-            Path(self.file_path).relative_to(Path.cwd()).as_posix()
-        )
+        normalized_path = normalize_path(Path(self.file_path))
         self.errors.append(
             LinterError(
                 id_line=f'{normalized_path}:{line}',
