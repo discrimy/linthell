@@ -15,6 +15,6 @@ class LinthellBlackCheckPlugin(LinthellPlugin):
         for match in re.finditer(r'would reformat (.+)', linter_output):
             file_path = match.group(1)
             message = match.group(0)
-            id_line = Path(file_path).as_posix()
+            id_line = Path(file_path).relative_to(Path.cwd()).as_posix()
             errors.append(LinterError(id_line, message))
         return errors
