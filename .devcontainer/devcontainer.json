@@ -27,7 +27,7 @@
 	"workspaceFolder": "/app/",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/app/,type=bind",
 	"mounts": [
-		"source=${localEnv:USER}${localEnv:USERPROFILE}/.ssh,target=/tmp/.ssh,type=bind,readonly",
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/tmp/.ssh,type=bind,readonly",
 		// Exclude .git/hooks forders as hooks as machine-zspecific 
 		// (for example host's pre-commit hook and container's can be different as 
 		// they refer to different locations inside either host or container)
