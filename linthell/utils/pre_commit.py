@@ -1,5 +1,3 @@
-"""Pre-commit integration utilities."""
-
 from typing import Tuple
 
 from pre_commit.clientlib import load_config  # type: ignore
@@ -19,15 +17,13 @@ def get_all_files_by_hook(config_file: str, hook_name: str) -> Tuple[str, ...]:
     config = load_config(config_file)
     classifier = Classifier.from_config(
         filenames=get_all_files(),
-        include=config['files'],
-        exclude=config['exclude'],
+        include=config["files"],
+        exclude=config["exclude"],
     )
     store = Store()
-    hooks = [
-        hook for hook in all_hooks(config, store) if hook.name == hook_name
-    ]
+    hooks = [hook for hook in all_hooks(config, store) if hook.name == hook_name]
     if not hooks:
-        raise ValueError(f'Unknown hook name: {hook_name}')
+        raise ValueError(f"Unknown hook name: {hook_name}")
     [hook] = hooks
     filenames = classifier.filenames_for_hook(hook)
     return filenames

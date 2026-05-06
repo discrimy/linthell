@@ -13,11 +13,11 @@ from linthell.utils.config import create_config_dict
 
 @click.group()
 @click.option(
-    '--config',
-    'config_path',
+    "--config",
+    "config_path",
     help=(
         'Path to .ini config file. "common" section applies for all commands, '
-        'command specific config are specified by their name section, '
+        "command specific config are specified by their name section, "
         'for example "lint". Keys must have same name as argument name of '
         'their command function. For example, "baseline_file".'
     ),
@@ -51,9 +51,9 @@ def cli(ctx: click.Context, config_path: Optional[str]) -> None:
         ctx.default_map = create_config_dict(config_parser, command.commands)
 
 
-cli.add_command(lint_cli, 'lint')
-cli.add_command(baseline_cli, 'baseline')
+cli.add_command(lint_cli, "lint")
+cli.add_command(baseline_cli, "baseline")
 with suppress(ImportError):
     from linthell.commands.pre_commit.cli import pre_commit_cli
 
-    cli.add_command(pre_commit_cli, 'pre-commit')
+    cli.add_command(pre_commit_cli, "pre-commit")

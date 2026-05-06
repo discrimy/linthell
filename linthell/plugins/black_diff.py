@@ -9,30 +9,30 @@ from linthell.plugins.base import LinthellPlugin
 from linthell.utils.path import normalize_path
 from linthell.utils.types import LinterError
 
-_OLD_VERSION_FILE_PATH_SIGN = '--- '
-_NEW_VERSION_FILE_PATH_SIGN = '+++ '
+_OLD_VERSION_FILE_PATH_SIGN = "--- "
+_NEW_VERSION_FILE_PATH_SIGN = "+++ "
 _FILE_PATH_SIGNS = (_OLD_VERSION_FILE_PATH_SIGN, _NEW_VERSION_FILE_PATH_SIGN)
-_FILE_PATH_PATTERN = re.compile(r'(?:-{3}|\+{3})\s(?P<file_path>[\w/.-]+).*')
+_FILE_PATH_PATTERN = re.compile(r"(?:-{3}|\+{3})\s(?P<file_path>[\w/.-]+).*")
 """Example: --- package/module.py 2023-08-24 09:29:48.256318 +0000"""
-_LINE_NUMBER_SIGN = '@'
+_LINE_NUMBER_SIGN = "@"
 _LINE_NUMBER_PATTERN = re.compile(
-    r'@@ -(?P<old_file_version_line_number>\d+)(,\d+)?'
-    r' \+(?P<new_file_version_line_number>\d+)(,\d+)? @@'
+    r"@@ -(?P<old_file_version_line_number>\d+)(,\d+)?"
+    r" \+(?P<new_file_version_line_number>\d+)(,\d+)? @@"
 )
 """Example: @@ -10,20 +10,20 @@"""
-_REMOVE_LINE_SIGN = '-'
+_REMOVE_LINE_SIGN = "-"
 """Example: -    def_param: bool = True"""
-_ADD_LINE_SIGN = '+'
+_ADD_LINE_SIGN = "+"
 """Example: +    def_param: bool = True,"""
-_KEEP_LINE_SIGN = ' '
+_KEEP_LINE_SIGN = " "
 """Example:      def_param: bool = True,"""
 
 
 class _FileVersion(Enum):
     """Enumeration of file versions represented in black output."""
 
-    OLD = 'old'
-    NEW = 'new'
+    OLD = "old"
+    NEW = "new"
 
 
 class BlackOutputInvalidError(Exception):
@@ -42,7 +42,7 @@ class BlackOutputInvalidError(Exception):
     Allows to set `DEFAULT_MSG` for subclasses.
     """
 
-    DEFAULT_MSG: str = 'no detail'
+    DEFAULT_MSG: str = "no detail"
 
     def __init__(self, line: str, msg: Optional[str] = None) -> None:
         """Initialize exception instance.
@@ -55,7 +55,7 @@ class BlackOutputInvalidError(Exception):
         self.msg = msg or self.DEFAULT_MSG
 
     def __str__(self):
-        return f'Invalid black-diff output ({self.msg}): {self.line}'
+        return f"Invalid black-diff output ({self.msg}): {self.line}"
 
 
 class BlackOutputInvalidFilePathLineError(BlackOutputInvalidError):
@@ -65,8 +65,7 @@ class BlackOutputInvalidFilePathLineError(BlackOutputInvalidError):
     """
 
     DEFAULT_MSG = (
-        'expected line to contain file path '
-        'but it does not match expected pattern'
+        "expected line to contain file path but it does not match expected pattern"
     )
 
 
@@ -77,8 +76,7 @@ class BlackOutputInvalidLineNumberLineError(BlackOutputInvalidError):
     """
 
     DEFAULT_MSG = (
-        'expected line to contain line number '
-        'but it does not match expected pattern'
+        "expected line to contain line number but it does not match expected pattern"
     )
 
 
@@ -89,9 +87,7 @@ class BlackOutputInvalidLineOrderError(BlackOutputInvalidError):
     current in-process line.
     """
 
-    DEFAULT_MSG = (
-        'expected lines with file path and line number before lines with code'
-    )
+    DEFAULT_MSG = "expected lines with file path and line number before lines with code"
 
 
 class LinthellBlackDiffPlugin(LinthellPlugin):
@@ -178,7 +174,7 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
         if not file_path_match:
             raise BlackOutputInvalidFilePathLineError(line=line)
 
-        self.file_path = file_path_match.group('file_path')
+        self.file_path = file_path_match.group("file_path")
 
     def _parse_line_number(self, line: str) -> None:
         """Parse line numbers from black output that starts with @."""
@@ -187,10 +183,10 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
             raise BlackOutputInvalidLineNumberLineError(line=line)
 
         self.old_file_version_line_number = int(
-            line_number_match.group('old_file_version_line_number')
+            line_number_match.group("old_file_version_line_number")
         )
         self.new_file_version_line_number = int(
-            line_number_match.group('new_file_version_line_number')
+            line_number_match.group("new_file_version_line_number")
         )
 
     def _append_errors(self, line: str, file_version: _FileVersion) -> None:
@@ -211,8 +207,8 @@ class LinthellBlackDiffPlugin(LinthellPlugin):
         normalized_path = normalize_path(Path(self.file_path))
         self.errors.append(
             LinterError(
-                id_line=f'{normalized_path}:{line}',
-                error_message=f'{self.file_path}:{line_number}: {line}',
+                id_line=f"{normalized_path}:{line}",
+                error_message=f"{self.file_path}:{line_number}: {line}",
             ),
         )
 

@@ -21,13 +21,13 @@ class LinthellPlugin(abc.ABC):
 
 def get_available_plugins() -> EntryPoints:
     """Get available linthell plugins."""
-    plugins = cast(EntryPoints, entry_points(group='linthell.plugins'))
+    plugins = cast(EntryPoints, entry_points(group="linthell.plugins"))
     return plugins
 
 
 def load_plugin_by_name(name: str) -> LinthellPlugin:
     """Load class plugin by it's plugin name."""
-    plugins = entry_points(group='linthell.plugins')
+    plugins = entry_points(group="linthell.plugins")
     try:
         plugin_class = plugins[name].load()
     except KeyError as error:

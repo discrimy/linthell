@@ -12,5 +12,5 @@ def pre_commit_cli():
     pass
 
 
-pre_commit_cli.add_command(lint_cli, 'lint')
-pre_commit_cli.add_command(baseline_cli, 'baseline')
+pre_commit_cli.add_command(lint_cli, "lint")
+pre_commit_cli.add_command(baseline_cli, "baseline")

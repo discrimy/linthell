@@ -10,30 +10,30 @@ from linthell.plugins.base import LinthellPlugin
 from linthell.utils.path import normalize_path
 from linthell.utils.types import LinterError
 
-_OLD_VERSION_FILE_PATH_SIGN = '--- '
-_NEW_VERSION_FILE_PATH_SIGN = '+++ '
+_OLD_VERSION_FILE_PATH_SIGN = "--- "
+_NEW_VERSION_FILE_PATH_SIGN = "+++ "
 _FILE_PATH_SIGNS = (_OLD_VERSION_FILE_PATH_SIGN, _NEW_VERSION_FILE_PATH_SIGN)
-_FILE_PATH_PATTERN = re.compile(r'(?:-{3}|\+{3})\s(?P<file_path>[\w/.-]+).*')
+_FILE_PATH_PATTERN = re.compile(r"(?:-{3}|\+{3})\s(?P<file_path>[\w/.-]+).*")
 """Example: --- package/module.py:before   2023-06-11 22:35:28.465518"""
-_LINE_NUMBER_SIGN = '@'
+_LINE_NUMBER_SIGN = "@"
 _LINE_NUMBER_PATTERN = re.compile(
-    r'@@ -(?P<old_file_version_line_number>\d+)(,\d+)?'
-    r' \+(?P<new_file_version_line_number>\d+)(,\d+)? @@'
+    r"@@ -(?P<old_file_version_line_number>\d+)(,\d+)?"
+    r" \+(?P<new_file_version_line_number>\d+)(,\d+)? @@"
 )
 """Example: @@ -10,20 +10,20 @@"""
-_REMOVE_LINE_SIGN = '-'
+_REMOVE_LINE_SIGN = "-"
 """Example: -    import b, a"""
-_ADD_LINE_SIGN = '+'
+_ADD_LINE_SIGN = "+"
 """Example: +    import a, b"""
-_KEEP_LINE_SIGN = ' '
+_KEEP_LINE_SIGN = " "
 """Example:      import a, b"""
 
 
 class _FileVersion(Enum):
     """Enumeration of file versions represented in isort output."""
 
-    OLD = 'old'
-    NEW = 'new'
+    OLD = "old"
+    NEW = "new"
 
 
 class IsortOutputInvalidError(Exception):
@@ -43,7 +43,7 @@ class IsortOutputInvalidError(Exception):
     Allows to set `DEFAULT_MSG` for subclasses.
     """
 
-    DEFAULT_MSG: str = 'no detail'
+    DEFAULT_MSG: str = "no detail"
 
     def __init__(self, line: str, msg: Optional[str] = None) -> None:
         """Initialize exception instance.
@@ -56,7 +56,7 @@ class IsortOutputInvalidError(Exception):
         self.msg = msg or self.DEFAULT_MSG
 
     def __str__(self):
-        return f'Invalid isort-diff output ({self.msg}): {self.line}'
+        return f"Invalid isort-diff output ({self.msg}): {self.line}"
 
 
 class IsortOutputInvalidFilePathLineError(IsortOutputInvalidError):
@@ -66,8 +66,7 @@ class IsortOutputInvalidFilePathLineError(IsortOutputInvalidError):
     """
 
     DEFAULT_MSG = (
-        'expected line to contain file path '
-        'but it does not match expected pattern'
+        "expected line to contain file path but it does not match expected pattern"
     )
 
 
@@ -78,8 +77,7 @@ class IsortOutputInvalidLineNumberLineError(IsortOutputInvalidError):
     """
 
     DEFAULT_MSG = (
-        'expected line to contain line number '
-        'but it does not match expected pattern'
+        "expected line to contain line number but it does not match expected pattern"
     )
 
 
@@ -90,9 +88,7 @@ class IsortOutputInvalidLineOrderError(IsortOutputInvalidError):
     current in-process line.
     """
 
-    DEFAULT_MSG = (
-        'expected lines with file path and line number before lines with code'
-    )
+    DEFAULT_MSG = "expected lines with file path and line number before lines with code"
 
 
 class LinthellIsortDiffPlugin(LinthellPlugin):
@@ -172,7 +168,7 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         if not file_path_match:
             raise IsortOutputInvalidFilePathLineError(line=line)
 
-        self.file_path = file_path_match.group('file_path')
+        self.file_path = file_path_match.group("file_path")
 
     def _parse_line_number(self, line: str) -> None:
         """Parse line numbers from isort output that starts with @."""
@@ -181,10 +177,10 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
             raise IsortOutputInvalidLineNumberLineError(line=line)
 
         self.old_file_version_line_number = int(
-            line_number_match.group('old_file_version_line_number')
+            line_number_match.group("old_file_version_line_number")
         )
         self.new_file_version_line_number = int(
-            line_number_match.group('new_file_version_line_number')
+            line_number_match.group("new_file_version_line_number")
         )
 
     def _append_errors(self, line: str, file_version: _FileVersion) -> None:
@@ -205,8 +201,8 @@ class LinthellIsortDiffPlugin(LinthellPlugin):
         normalized_path = normalize_path(Path(self.file_path))
         self.errors.append(
             LinterError(
-                id_line=f'{normalized_path}:{line}',
-                error_message=f'{self.file_path}:{line_number}: {line}',
+                id_line=f"{normalized_path}:{line}",
+                error_message=f"{self.file_path}:{line_number}: {line}",
             ),
         )
 

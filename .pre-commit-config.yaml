@@ -1,32 +1,20 @@
 repos:
   - repo: local
     hooks:
-      - id: black
-        name: black
+      - id: ruff-check
+        name: ruff format
         language: system
-        entry: poetry run black --check --diff
-        types:  [python]
-
-      - id: flake8
-        name: flake8
-        language: system
-        entry: poetry run flake8
+        entry: poetry run ruff check
         types: [python]
-
-      - id: pydoctyle
-        name: pydocstyle
+      
+      - id: ruff-format
+        name: ruff format
         language: system
-        entry: poetry run pydocstyle
+        entry: poetry run ruff format --check
         types: [python]
 
       - id: mypy
         name: mypy
         language: system
         entry: poetry run mypy
-        types: [python]
-
-      - id: isort
-        name: isort
-        language: system
-        entry: poetry run isort --check-only --diff
         types: [python]

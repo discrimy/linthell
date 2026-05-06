@@ -12,9 +12,7 @@ class LintReport:
     errors: List[str]
 
 
-def lint(
-    digests: Set[str], linter_output: str, plugin: LinthellPlugin
-) -> LintReport:
+def lint(digests: Set[str], linter_output: str, plugin: LinthellPlugin) -> LintReport:
     """Lint provided linter output and returns report with found errors.
 
     :param digests: digests of already known errors

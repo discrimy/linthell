@@ -14,32 +14,32 @@ from linthell.utils.click import Mutex
 
 @click.command()
 @click.option(
-    '--baseline',
-    '-b',
-    'baseline_file',
+    "--baseline",
+    "-b",
+    "baseline_file",
     type=click.Path(),
-    help='Path to baseline file with ignores.',
+    help="Path to baseline file with ignores.",
     required=True,
 )
 @click.option(
-    '--lint-format',
-    '--format',
-    '-f',
-    'lint_format',
-    help='Regex to parse your linter output.',
+    "--lint-format",
+    "--format",
+    "-f",
+    "lint_format",
+    help="Regex to parse your linter output.",
     default=None,
     cls=Mutex,
-    not_required_if=['plugin_name'],
+    not_required_if=["plugin_name"],
 )
 @click.option(
-    '--plugin-name',
-    '-p',
-    'plugin_name',
-    help='Plugin to use.',
+    "--plugin-name",
+    "-p",
+    "plugin_name",
+    help="Plugin to use.",
     type=click.Choice(sorted(get_available_plugins().names)),
     default=None,
     cls=Mutex,
-    not_required_if=['lint_format'],
+    not_required_if=["lint_format"],
 )
 def baseline_cli(
     baseline_file: str,
@@ -59,8 +59,8 @@ def baseline_cli(
         plugin = LinthellRegexPlugin(lint_format)
     else:
         raise click.BadOptionUsage(
-            'lint_format | plugin_name',
-            'Provide either lint_format or plugin_name',
+            "lint_format | plugin_name",
+            "Provide either lint_format or plugin_name",
         )
 
     linter_output = sys.stdin.read()

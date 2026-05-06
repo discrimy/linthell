@@ -12,7 +12,7 @@ class LinthellBlackCheckPlugin(LinthellPlugin):
 
     def parse(self, linter_output: str) -> List[LinterError]:  # noqa D102
         errors = []
-        for match in re.finditer(r'would reformat (.+)', linter_output):
+        for match in re.finditer(r"would reformat (.+)", linter_output):
             file_path = match.group(1)
             message = match.group(0)
             id_line = normalize_path(Path(file_path))
