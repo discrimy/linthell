@@ -1,13 +1,16 @@
 """Tests for plugin parse() methods with real linter output strings."""
 
-import linthell.plugins.flake8 as flake8_mod
+import pytest
+
 import linthell.plugins.black_check as black_check_mod
 import linthell.plugins.black_diff as black_diff_mod
+import linthell.plugins.flake8 as flake8_mod
 import linthell.plugins.isort_diff as isort_diff_mod
 import linthell.plugins.mypy as mypy_mod
-import linthell.plugins.pylint as pylint_mod
 import linthell.plugins.pydocstyle as pydocstyle_mod
-from linthell.plugins.regex import LinthellRegexPlugin
+import linthell.plugins.pylint as pylint_mod
+from linthell.plugins.regex import LinthellRegexPlugin, get_id_line
+from tests.helpers import temp_project
 
 
 class TestFlake8Plugin:
@@ -169,3 +172,47 @@ class TestIsortDiffPlugin:
         output = "Skipped 2 files"
         errors = plugin.parse(output)
         assert errors == []
+
+
+class TestGetIdLine:
+    def test_embeds_code_line(self):
+        with temp_project({"test.py": "x = 1\ny = 2\n"}):
+            assert get_id_line("test.py", "2", "E501") == "test.py:y = 2:E501"
+
+    def test_empty_line_number(self):
+        with temp_project({"test.py": "x = 1\n"}):
+            assert get_id_line("test.py", "", "msg") == "test.py::msg"
+
+
+class TestBlackDiffErrorPaths:
+    def test_invalid_file_path_line(self):
+        plugin = black_diff_mod.LinthellBlackDiffPlugin()
+        with pytest.raises(black_diff_mod.BlackOutputInvalidFilePathLineError):
+            plugin.parse("---  abc")
+
+    def test_invalid_line_number_line(self):
+        plugin = black_diff_mod.LinthellBlackDiffPlugin()
+        with pytest.raises(black_diff_mod.BlackOutputInvalidLineNumberLineError):
+            plugin.parse("@@ -x +y @@")
+
+    def test_code_line_before_file_path(self):
+        plugin = black_diff_mod.LinthellBlackDiffPlugin()
+        with pytest.raises(black_diff_mod.BlackOutputInvalidLineOrderError):
+            plugin.parse("-def foo():")
+
+
+class TestIsortDiffErrorPaths:
+    def test_invalid_file_path_line(self):
+        plugin = isort_diff_mod.LinthellIsortDiffPlugin()
+        with pytest.raises(isort_diff_mod.IsortOutputInvalidFilePathLineError):
+            plugin.parse("---  abc")
+
+    def test_invalid_line_number_line(self):
+        plugin = isort_diff_mod.LinthellIsortDiffPlugin()
+        with pytest.raises(isort_diff_mod.IsortOutputInvalidLineNumberLineError):
+            plugin.parse("@@ -x +y @@")
+
+    def test_code_line_before_file_path(self):
+        plugin = isort_diff_mod.LinthellIsortDiffPlugin()
+        with pytest.raises(isort_diff_mod.IsortOutputInvalidLineOrderError):
+            plugin.parse("-def foo():")
