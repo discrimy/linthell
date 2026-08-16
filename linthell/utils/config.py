@@ -40,7 +40,7 @@ def create_default_map(
     return {
         command_name: create_default_map(common, command.commands)  # type: ignore # noqa: E501
         if isinstance(command, Group)
-        else common
+        else dict(common)
         for command_name, command in commands.items()
     }
 
