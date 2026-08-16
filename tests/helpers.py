@@ -45,11 +45,12 @@ def temp_baseline():
     """
     import tempfile
 
-    f = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=True)
+    fd, path = tempfile.mkstemp(suffix=".txt")
+    os.close(fd)
     try:
-        yield Path(f.name)
+        yield Path(path)
     finally:
-        f.close()
+        Path(path).unlink(missing_ok=True)
 
 
 def write_baseline_file(path: str, id_lines: List[str]) -> None:
