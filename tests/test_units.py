@@ -1,20 +1,19 @@
 """Unit tests for pure linthell logic functions. No I/O, no mocks required."""
 
-import tempfile
+from configparser import ConfigParser
 from pathlib import Path
 from unittest.mock import MagicMock
 
 import click
-from configparser import ConfigParser
 
+from linthell.utils.baseline import load_baseline, save_baseline
 from linthell.utils.click import Mutex
 from linthell.utils.config import config_to_dict, get_by_dotted_path
 from linthell.utils.id_lines import id_line_to_digest
 from linthell.utils.lint import LintReport, lint
 from linthell.utils.path import normalize_path
 from linthell.utils.types import LinterError
-
-from tests.helpers import read_baseline_file, temp_project, write_baseline_file
+from tests.helpers import temp_baseline, temp_project
 
 
 class TestIdLineToDigest:
@@ -41,48 +40,31 @@ class TestBaselineEncodingRoundTrip:
 
     def test_roundtrip_preserves_lines(self):
         id_lines = ["file.py:    x: msg1", "other.py:    y: msg2"]
-        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
-            bl_path = f.name
-        try:
-            write_baseline_file(bl_path, id_lines)
-            result = read_baseline_file(bl_path)
+        with temp_baseline() as bl_path:
+            save_baseline(bl_path, id_lines)
+            result = load_baseline(bl_path)
             assert result == sorted(id_lines)
-        finally:
-            Path(bl_path).unlink(missing_ok=True)
 
     def test_roundtrip_preserves_unicode(self):
         id_lines = ["file.py:def func(unicode: é): E999"]
-        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
-            bl_path = f.name
-        try:
-            write_baseline_file(bl_path, id_lines)
-            result = read_baseline_file(bl_path)
+        with temp_baseline() as bl_path:
+            save_baseline(bl_path, id_lines)
+            result = load_baseline(bl_path)
             assert result == id_lines
-        finally:
-            Path(bl_path).unlink(missing_ok=True)
 
     def test_roundtrip_preserves_tabs(self):
         id_lines = ["file.py:    import\tos: E401"]
-        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
-            bl_path = f.name
-        try:
-            write_baseline_file(bl_path, id_lines)
-            result = read_baseline_file(bl_path)
+        with temp_baseline() as bl_path:
+            save_baseline(bl_path, id_lines)
+            result = load_baseline(bl_path)
             assert result == id_lines
-        finally:
-            Path(bl_path).unlink(missing_ok=True)
 
     def test_baseline_write_is_sorted(self):
         lines = ["z.py: msg1", "a.py: msg0"]
-        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
-            bl_path = f.name
-        try:
-            write_baseline_file(bl_path, lines)
-            content = Path(bl_path).read_text()
-            raw_lines = content.splitlines()
+        with temp_baseline() as bl_path:
+            save_baseline(bl_path, lines)
+            raw_lines = bl_path.read_text().splitlines()
             assert raw_lines[0] < raw_lines[1]
-        finally:
-            Path(bl_path).unlink(missing_ok=True)
 
 
 class TestLintFunction:

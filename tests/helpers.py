@@ -1,7 +1,8 @@
 import os
+import shutil
+import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from typing import List
 
 
 @contextmanager
@@ -17,8 +18,6 @@ def temp_project(files: dict):
             # cwd contains foo.py
             pass
     """
-    import tempfile
-
     original_dir = os.getcwd()
     tmpdir = tempfile.mkdtemp()
     tmpdir_path = Path(tmpdir)
@@ -32,8 +31,6 @@ def temp_project(files: dict):
     finally:
         os.chdir(original_dir)
         # Cleanup the temp directory
-        import shutil
-
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
@@ -42,30 +39,14 @@ def temp_baseline():
     """Create a temp baseline file that auto-cleans up.
 
     Yields a pathlib.Path to the file.
-    """
-    import tempfile
 
-    f = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=True)
+    Uses mkstemp (not NamedTemporaryFile) because the latter keeps the file
+    open for the whole block; on Windows an open file cannot be re-opened for
+    writing by the code under test, which would raise PermissionError.
+    """
+    fd, path = tempfile.mkstemp(suffix=".txt")
+    os.close(fd)
     try:
-        yield Path(f.name)
+        yield Path(path)
     finally:
-        f.close()
-
-
-def write_baseline_file(path: str, id_lines: List[str]) -> None:
-    """Write baseline file with unicode-escaped format.
-
-    Recreates linthell's save_baseline logic for test setup.
-    """
-    raw_lines = [line.encode("unicode_escape").decode("utf-8") for line in id_lines]
-    Path(path).write_text("\n".join(sorted(raw_lines)))
-
-
-def read_baseline_file(path: str) -> List[str]:
-    """Read baseline file and decode unicode-escaped lines.
-
-    Recreates linthell's load_baseline logic for test assertions.
-    """
-    raw_lines = Path(path).read_text().splitlines()
-    decoded = [line.encode("utf-8").decode("unicode_escape") for line in raw_lines]
-    return decoded
+        Path(path).unlink(missing_ok=True)
