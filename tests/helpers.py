@@ -1,4 +1,6 @@
 import os
+import shutil
+import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from typing import List
@@ -17,8 +19,6 @@ def temp_project(files: dict):
             # cwd contains foo.py
             pass
     """
-    import tempfile
-
     original_dir = os.getcwd()
     tmpdir = tempfile.mkdtemp()
     tmpdir_path = Path(tmpdir)
@@ -32,8 +32,6 @@ def temp_project(files: dict):
     finally:
         os.chdir(original_dir)
         # Cleanup the temp directory
-        import shutil
-
         shutil.rmtree(tmpdir, ignore_errors=True)
 
 
@@ -42,9 +40,11 @@ def temp_baseline():
     """Create a temp baseline file that auto-cleans up.
 
     Yields a pathlib.Path to the file.
-    """
-    import tempfile
 
+    Uses mkstemp (not NamedTemporaryFile) because the latter keeps the file
+    open for the whole block; on Windows an open file cannot be re-opened for
+    writing by the code under test, which would raise PermissionError.
+    """
     fd, path = tempfile.mkstemp(suffix=".txt")
     os.close(fd)
     try:
