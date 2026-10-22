@@ -1,0 +1,25 @@
+# Used only on the git.medrocket.ru mirror: a scheduled pipeline pulls
+# branches and tags from GitHub and pushes them back to this project.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+mirror:
+  image:
+    name: alpine/git:latest
+    entrypoint: [""]
+  resource_group: mirror
+  variables:
+    CACHE_DIR: $CI_PROJECT_DIR/.mirror-cache.git
+    DST_URL: $CI_SERVER_URL/$CI_PROJECT_PATH.git
+    # Requires "Allow Git push requests to the repository" in CI/CD > Job token permissions.
+    GITLAB_USER: gitlab-ci-token
+    GITLAB_TOKEN: $CI_JOB_TOKEN
+    # resource_group already serializes runs; busybox flock lacks the options the script uses.
+    MIRROR_LOCKED: "1"
+  cache:
+    key: mirror
+    paths:
+      - .mirror-cache.git
+  script:
+    - sh scripts/mirror.sh
